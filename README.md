@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.1
+# Registry-Tweaks-Refresh.bat v0.1.1
 Windows 11 Registry Tweaks
 
 ### this is what i use, make the bat file and run it, skim threw the stuff you might not want to change
@@ -11,7 +11,12 @@ Windows 11 Registry Tweaks
 @echo off
 color 02
 
-"%systemroot%\system32\cacls.exe" "%systemroot%\system32\config\system"
+set logfile=%userprofile%\desktop\logs.txt
+call :log > %logfile%
+exit /b
+:log
+
+>nul 2>&1 "%systemroot%\system32\cacls.exe" "%systemroot%\system32\config\system"
 if '%errorlevel%' neq '0' ( goto getadmin) else ( goto dothething )
 
 :getadmin
@@ -25,9 +30,9 @@ exit /b
 :dothething
 
 echo [REG_DWORD values 0 = Boot 1 = System 2 = Automatic 3 = Manual 4 = Disabled]
-echo
+
 echo [ENABLE WINDOWS UPDATES add or remove echo]
-echo
+
 echo sc config "BITS" start=auto
 echo reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f
 echo sc config "InstallService" start=demand
@@ -46,9 +51,9 @@ echo sc config "msiserver" start=demand
 echo reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f
 echo sc config "appidsvc" start=demand
 echo reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 3 /f
-echo
+
 echo [DISABLE WINDOWS UPDATES add or remove echo]
-echo
+
 sc stop "BITS" && sc config "BITS" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "InstallService" && sc config "InstallService" start=disabled
@@ -63,11 +68,11 @@ sc stop "wuauserv" && sc config "wuauserv" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "W32Time" && sc config "W32Time" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 4 /f
-sc config "msiserver" start=demand
+sc config "msiserver" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 4 /f
-sc config "appidsvc" start=demand
+sc config "appidsvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 4 /f
-echo
+
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 1 /f
 reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_DWORD /d 400 /f
 reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_DWORD /d 400 /f
@@ -104,7 +109,6 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization" /v
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /t REG_DWORD /d 1 /f
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d 0 /f
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "LaunchTo" /t REG_DWORD /d 1 /f
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowCopilotButton" /t REG_DWORD /d 0 /f
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowTaskViewButton" /t REG_DWORD /d 0 /f
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v "PeopleBand" /t REG_DWORD /d 0 /f
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" /v "EnthusiastMode" /t REG_DWORD /d 1 /f
@@ -133,7 +137,7 @@ reg add "HKCU\SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "IncludeEnter
 reg add "HKCU\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" /v "NoTileApplicationNotification" /t REG_DWORD /d 1 /f
 reg add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableNotificationCenter" /t REG_DWORD /d 0 /f
 reg add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableSearchBoxSuggestions" /t REG_DWORD /d "1" /f
-reg add "HKCU\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD /d 0 /f
 reg add "HKCU\System\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 0 /f
 reg add "HKCU\System\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d 0 /f
 reg add "HKCU\System\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 2 /f
@@ -153,9 +157,9 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v "Enabled" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost" /v "EnableWebContentEvaluation" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v "Value" /t REG_SZ /d Deny /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v "DODownloadMode" /t REG_DWORD /d 1 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Device Metadata" /v "PreventDeviceMetadataFromNetwork" /t REG_DWORD /d 0 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v "DODownloadMode" /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Device Metadata" /v "PreventDeviceMetadataFromNetwork" /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v "SmartScreenEnabled" /t REG_SZ /d "Off" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" /v "ShowHibernateOption" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" /v "AllowTelemetry" /t REG_DWORD /d 0 /f
@@ -167,8 +171,10 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "CortanaEnabl
 reg add "HKLM\SOFTWARE\Microsoft\Windows\ScheduledDiagnostics" /v "EnabledExecution" /t REG_DWORD /d "0" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting" /v "Disabled" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "ExcludeWUDrivers" /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" /v "NoActiveHelp" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Biometrics" /v "Enabled" /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AlternateErrorPagesEnabled" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "ConfigureDoNotTrack" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "CryptoWalletEnabled" /t REG_DWORD /d 0 /f
@@ -241,7 +247,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "ConnectedS
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "ConnectedSearchUseWebOverMeteredConnections" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "DisableSearch" /t REG_DWORD /d "1" /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "DisableWebSearch" /t REG_DWORD /d 1 /f
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v "TurnOffWindowsCopilot" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v "ExcludeWUDriversInQualityUpdate" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "AUOptions" /t REG_DWORD /d 2 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "NoAutoUpdate" /t REG_DWORD /d 0 /f
@@ -261,7 +266,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management
 reg add "HKLM\System\CurrentControlSet\Control\Session Manager\Power" /v "HibernateEnabled" /t REG_DWORD /d 0 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener" /v "Start" /t REG_DWORD /d 0 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Start" /t REG_DWORD /d 0 /f
-echo
+
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d 3 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d 2 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "AutoShareWks" /t REG_DWORD /d 0 /f
@@ -273,9 +278,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWOR
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD /d 2 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\xboxgip" /v "Start" /t REG_DWORD /d 3 /f
-echo
+
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\jhi_service" /v "Start" /t REG_DWORD /d 4 /f
-echo
+
 sc stop "Intel(R) TPM Provisioning Service" && sc config "Intel(R) TPM Provisioning Service" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "bthserv" && sc config "bthserv" start=disabled
@@ -378,16 +383,14 @@ sc stop "XboxGipSvc" && sc config "XboxGipSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxGipSvc" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "XboxNetApiSvc" && sc config "XboxNetApiSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v "Start" /t REG_DWORD /d 4 /f
-echo
+
 reg add "HKLM\SYSTEM\Maps" /v "AutoUpdateEnabled" /t REG_DWORD /d 0 /f
 reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
-echo
+
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate" /f
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\EdgeUpdate" /f
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate" /f
-echo
-schtasks /Change /TN "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable
-schtasks /Change /TN "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
+
 schtasks /Change /TN "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable
 schtasks /Change /TN "\Microsoft\Windows\Application Experience\StartupAppTask" /disable
 schtasks /Change /TN "\Microsoft\Windows\ApplicationData\DsSvcCleanup" /disable
@@ -404,7 +407,6 @@ schtasks /Change /TN "\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownloa
 schtasks /Change /TN "\Microsoft\Windows\FileHistory\File History (maintenance mode)" /disable
 schtasks /Change /TN "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /disable
 schtasks /Change /TN "\Microsoft\Windows\Maintenance\WinSAT" /disable
-schtasks /Change /TN "\Microsoft\Windows\NetTrace\GatherNetworkInfo" /disable
 schtasks /Change /TN "\Microsoft\Windows\PI\Sqm-Tasks" /disable
 schtasks /Change /TN "\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem" /disable
 schtasks /Change /TN "\Microsoft\Windows\PushToInstall\LoginCheck" /disable
@@ -416,6 +418,7 @@ schtasks /Change /TN "\Microsoft\Windows\Subscription\EnableLicenseAcquisition" 
 schtasks /Change /TN "\Microsoft\Windows\Subscription\LicenseAcquisition" /disable
 schtasks /Change /TN "\Microsoft\Windows\Time Synchronization\ForceSynchronizeTime" /disable
 schtasks /Change /TN "\Microsoft\Windows\TPM\Tpm-Maintenance" /disable
+schtasks /Change /TN "\Microsoft\Windows\WaaSMedic\MaintenanceWork" /disable
 schtasks /Change /TN "\Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /disable
 schtasks /Change /TN "\Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /disable
 schtasks /Change /TN "\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /disable
@@ -423,8 +426,10 @@ schtasks /Change /TN "\Microsoft\Windows\Windows Defender\Windows Defender Verif
 schtasks /Change /TN "\Microsoft\Windows\Windows Error Reporting\QueueReporting" /disable
 schtasks /Change /TN "\Microsoft\Windows\WlanSvc\CDSSync" /disable
 schtasks /Change /TN "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable
+schtasks /Change /TN "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable
+schtasks /Change /TN "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
 
 echo [reboot]
 
-pause
+exit /b
 ```
