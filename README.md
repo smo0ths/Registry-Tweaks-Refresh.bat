@@ -358,14 +358,6 @@ sc stop "UserDataSvc" && sc config "UserDataSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UserDataSvc" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "WbioSrvc" && sc config "WbioSrvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "WdBoot" && sc config "WdBoot" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "WdFilter" && sc config "WdFilter" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "WdNisDrv" && sc config "WdNisDrv" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "WdNisSvc" && sc config "WdNisSvc" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "webthreatdefsvc" && sc config "webthreatdefsvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "webthreatdefusersvc" && sc config "webthreatdefusersvc" start=disabled
@@ -386,6 +378,17 @@ sc stop "XboxGipSvc" && sc config "XboxGipSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxGipSvc" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "XboxNetApiSvc" && sc config "XboxNetApiSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v "Start" /t REG_DWORD /d 4 /f
+
+sc stop "WinDefend" && sc config "WinDefend" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "WdBoot" && sc config "WdBoot" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "WdFilter" && sc config "WdFilter" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "WdNisDrv" && sc config "WdNisDrv" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "WdNisSvc" && sc config "WdNisSvc" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 4 /f
 
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate" /f
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\EdgeUpdate" /f
