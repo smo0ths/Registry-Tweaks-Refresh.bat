@@ -17,7 +17,7 @@ exit /b
 :log
 
 >nul 2>&1 "%systemroot%\system32\cacls.exe" "%systemroot%\system32\config\system"
-if '%errorlevel%' neq '0' ( goto getadmin) else ( goto dothething )
+if '%errorlevel%' neq '0' ( goto getadmin ) else ( goto dothething )
 
 :getadmin
 
