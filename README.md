@@ -21,8 +21,8 @@ if '%errorlevel%' neq '0' ( goto getadmin ) else ( goto dothething )
 
 :getadmin
 
-echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
-echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
+Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
 "%temp%\getadmin.vbs"
 
 exit /b
