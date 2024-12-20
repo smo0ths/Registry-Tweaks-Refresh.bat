@@ -409,11 +409,14 @@ schtasks /Change /TN "\Microsoft\Windows\License Manager\TempSignedLicenseExchan
 schtasks /Change /TN "\Microsoft\Windows\Maintenance\WinSAT" /disable
 schtasks /Change /TN "\Microsoft\Windows\PI\Sqm-Tasks" /disable
 schtasks /Change /TN "\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem" /disable
+schtasks /Change /TN "\Microsoft\Windows\Printing\PrinterCleanupTask" /disable
+schtasks /Change /TN "\Microsoft\Windows\Printing\PrintJobCleanupTask" /disable
 schtasks /Change /TN "\Microsoft\Windows\PushToInstall\LoginCheck" /disable
 schtasks /Change /TN "\Microsoft\Windows\PushToInstall\Registration" /disable
 schtasks /Change /TN "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable
 schtasks /Change /TN "\Microsoft\Windows\Shell\FamilySafetyMonitor" /disable
 schtasks /Change /TN "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable
+schtasks /Change /TN "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /disable
 schtasks /Change /TN "\Microsoft\Windows\Subscription\EnableLicenseAcquisition" /disable
 schtasks /Change /TN "\Microsoft\Windows\Subscription\LicenseAcquisition" /disable
 schtasks /Change /TN "\Microsoft\Windows\Time Synchronization\ForceSynchronizeTime" /disable
