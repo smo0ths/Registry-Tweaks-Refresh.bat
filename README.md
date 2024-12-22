@@ -4,6 +4,7 @@ Windows 11 Registry Tweaks
 #### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
 #### use Autoruns64, OOSU10 and uninstallers/registry cleaners to get all the other stuff
 
+```python
 @echo off
 color 02
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
@@ -398,3 +399,4 @@ color 04
 call :log > %logfile%
 color 02
 pause >nul
+```
