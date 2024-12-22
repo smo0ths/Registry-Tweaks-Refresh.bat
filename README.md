@@ -1,16 +1,5 @@
-# Registry-Tweaks-Refresh.bat v0.1.4
-Windows 11 Registry Tweaks
-
-### this is what i use, make the bat file and run it, skim threw the stuff you might not want to change
-
-#### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
-
-#### use Autoruns64, OOSU10 and uninstallers/registry cleaners to get all the other stuff
-
-```python
 @echo off
 color 02
-
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
@@ -25,52 +14,49 @@ if '%errorlevel%' NEQ '0' (
 :gotAdmin
     pushd "%CD%"
     CD /D "%~dp0"
-
-set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.1.4.txt
+set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.1.5.txt
 :log
-
 :: echo [REG_DWORD values 0 = Boot 1 = System 2 = Automatic 3 = Manual 4 = Disabled]
-
-:: echo [ENABLE WINDOWS UPDATES add or remove ::]
-:: sc start "BITS" && sc config "BITS" start=auto
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f
-:: sc start "InstallService" && sc config "InstallService" start=demand
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f
-:: sc start "uhssvc" && sc config "uhssvc" start=auto
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\uhssvc" /v "Start" /t REG_DWORD /d 2 /f
-:: sc start "UsoSvc" && sc config "UsoSvc" start=auto
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 2 /f
-:: sc start "WaaSMedicSvc" && sc config "WaaSMedicSvc" start=demand
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 3 /f
-:: sc start "wuauserv" && sc config "wuauserv" start=demand
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 3 /f
-:: sc start "W32Time" && sc config "W32Time" start=auto
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 2 /f
-:: sc start "msiserver" && sc config "msiserver" start=demand
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f
-:: sc start "appidsvc" && sc config "appidsvc" start=demand
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 3 /f
-
-echo [DISABLE WINDOWS UPDATES add or remove ::]
-sc stop "BITS" && sc config "BITS" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "InstallService" && sc config "InstallService" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "uhssvc" && sc config "uhssvc" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\uhssvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "UsoSvc" && sc config "UsoSvc" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "WaaSMedicSvc" && sc config "WaaSMedicSvc" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "wuauserv" && sc config "wuauserv" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "W32Time" && sc config "W32Time" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "msiserver" && sc config "msiserver" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "appidsvc" && sc config "appidsvc" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 4 /f
 color 04
+:: echo [ENABLE WINDOWS UPDATES add or remove ::]
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f
+:: sc start "BITS" && sc config "BITS" start=auto
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f
+:: sc start "InstallService" && sc config "InstallService" start=demand
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\uhssvc" /v "Start" /t REG_DWORD /d 2 /f
+:: sc start "uhssvc" && sc config "uhssvc" start=auto
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 2 /f
+:: sc start "UsoSvc" && sc config "UsoSvc" start=auto
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 3 /f
+:: sc start "WaaSMedicSvc" && sc config "WaaSMedicSvc" start=demand
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 3 /f
+:: sc start "wuauserv" && sc config "wuauserv" start=demand
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 2 /f
+:: sc start "W32Time" && sc config "W32Time" start=auto
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 3 /f
+:: sc start "appidsvc" && sc config "appidsvc" start=demand
+color 02
+echo [DISABLE WINDOWS UPDATES add or remove ::]
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "BITS" && sc config "BITS" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "InstallService" && sc config "InstallService" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\uhssvc" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "uhssvc" && sc config "uhssvc" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "UsoSvc" && sc config "UsoSvc" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "WaaSMedicSvc" && sc config "WaaSMedicSvc" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "wuauserv" && sc config "wuauserv" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 4 /f
+sc stop "W32Time" && sc config "W32Time" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 4 /f
+sc stop "appidsvc" && sc config "appidsvc" start=disabled
+color 04
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f
+sc start "msiserver" && sc config "msiserver" start=demand
+color 02
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableMsMpEng" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 4 /f
@@ -230,7 +216,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" /v "DisableScanOnRealtimeEnable" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" /v "SpyNetReporting" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" /v "SubmitSamplesConsent" /t REG_DWORD /d 2 /f
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform" /v NoGenTicket /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform" /v "NoGenTicket" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" /v "DisabledByGroupPolicy" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "AITEnable" /t REG_DWORD /d 0 /f
@@ -255,9 +241,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "Disabl
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "DisableWindowsLocationProvider" /t REG_DWORD /d 1 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds" /v "AllowBuildPreview" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds" /v "EnableConfigFlighting" /t REG_DWORD /d 0 /f
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\SettingSync" /v DisableSettingSync /t REG_DWORD /d 2 /f
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\SettingSync" /v DisableSettingSyncUserOverride /t REG_DWORD /d 1 /f
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\SettingSync" /v EnableBackupForWin8Apps /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\SettingSync" /v "DisableSettingSync" /t REG_DWORD /d 2 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\SettingSync" /v "DisableSettingSyncUserOverride" /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\SettingSync" /v "EnableBackupForWin8Apps" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "EnableActivityFeed" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "PublishUserActivities" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "UploadUserActivities" /t REG_DWORD /d 0 /f
@@ -304,99 +290,52 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 1 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\xboxgip" /v "Start" /t REG_DWORD /d 3 /f
 color 04
-sc stop "jhi_service" && sc config "jhi_service" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\jhi_service" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "Intel(R) TPM Provisioning Service" && sc config "Intel(R) TPM Provisioning Service" start=disabled
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "bthserv" && sc config "bthserv" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthserv" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "CaptureService" && sc config "CaptureService" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CaptureService" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "CDPUserSvc" && sc config "CDPUserSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CDPUserSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "ConsentUxUserSvc" && sc config "ConsentUxUserSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "DevicePickerUserSvc" && sc config "DevicePickerUserSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DevicePickerUserSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "DevicesFlowUserSvc" && sc config "DevicesFlowUserSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DevicesFlowUserSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "DiagTrack" && sc config "DiagTrack" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DiagTrack" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "dmwappushservice" && sc config "dmwappushservice" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\dmwappushservice" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "DoSvc" && sc config "DoSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "DusmSvc" && sc config "DusmSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DusmSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "iphlpsvc" && sc config "iphlpsvc" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "LanmanServer" && sc config "LanmanServer" start=disabled
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\jhi_service" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "LanmanWorkstation" && sc config "LanmanWorkstation" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "lfsvc" && sc config "lfsvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lfsvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "lmhosts" && sc config "lmhosts" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "MessagingService" && sc config "MessagingService" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MessagingService" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "NcbService" && sc config "NcbService" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcbService" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "OneSyncSvc" && sc config "OneSyncSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\OneSyncSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "P9RdrService" && sc config "P9RdrService" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\P9RdrService" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "PcaSvc" && sc config "PcaSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "PenService" && sc config "PenService" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "PimIndexMaintenanceSvc" && sc config "PimIndexMaintenanceSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PimIndexMaintenanceSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "PlugPlay" && sc config "PlugPlay" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "PrintWorkflowUserSvc" && sc config "PrintWorkflowUserSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintWorkflowUserSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "QWAVE" && sc config "QWAVE" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\QWAVE" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "RemoteAccess" && sc config "RemoteAccess" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "RemoteRegistry" && sc config "RemoteRegistry" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteRegistry" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "RmSvc" && sc config "RmSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RmSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "Spooler" && sc config "Spooler" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "SSDPSRV" && sc config "SSDPSRV" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "StorSvc" && sc config "StorSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "SysMain" && sc config "SysMain" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "UnistoreSvc" && sc config "UnistoreSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UnistoreSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "UserDataSvc" && sc config "UserDataSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UserDataSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "WbioSrvc" && sc config "WbioSrvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "webthreatdefsvc" && sc config "webthreatdefsvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "webthreatdefusersvc" && sc config "webthreatdefusersvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "Winmgmt" && sc config "Winmgmt" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "wlidsvc" && sc config "wlidsvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "WMIRegistrationService" && sc config "WMIRegistrationService" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "WSearch" && sc config "WSearch" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "XblAuthManager" && sc config "XblAuthManager" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "XblGameSave" && sc config "XblGameSave" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblGameSave" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "XboxGipSvc" && sc config "XboxGipSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxGipSvc" /v "Start" /t REG_DWORD /d 4 /f
-sc stop "XboxNetApiSvc" && sc config "XboxNetApiSvc" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v "Start" /t REG_DWORD /d 4 /f
 color 02
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate" /f
@@ -443,16 +382,13 @@ schtasks /Change /TN "\Microsoft\Windows\WlanSvc\CDSSync" /disable
 schtasks /Change /TN "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable
 schtasks /Change /TN "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable
 schtasks /Change /TN "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
-
 color 02
-
 echo [reboot]
-
+color 04
 echo [check logs]
-
+color 02
 echo [try in safemode]
-
+color 04
 call :log > %logfile%
-
+color 02
 pause >nul
-```
