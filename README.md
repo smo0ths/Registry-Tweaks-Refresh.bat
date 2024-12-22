@@ -1,10 +1,3 @@
-# Registry-Tweaks-Refresh.bat v0.1.5
-Windows 11 Registry Tweaks
-### this is what i use, make the bat file and run it, skim threw the stuff you might not want to change
-#### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
-#### use Autoruns64, OOSU10 and uninstallers/registry cleaners to get all the other stuff
-
-```python
 @echo off
 color 02
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
@@ -23,7 +16,7 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.1.5.txt
 :log
-:: echo [REG_DWORD values 0 = Boot 1 = System 2 = Automatic 3 = Manual 4 = Disabled]
+:: echo [REG_DWORD values 0 = boot 1 = system 2 = automatic 3 = manual 4 = disabled]
 color 04
 :: echo [ENABLE WINDOWS UPDATES add or remove ::]
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f
@@ -349,46 +342,46 @@ reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\D
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\EdgeUpdate" /f
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate" /f
 color 04
-schtasks /Change /TN "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable
-schtasks /Change /TN "\Microsoft\Windows\Application Experience\StartupAppTask" /disable
-schtasks /Change /TN "\Microsoft\Windows\ApplicationData\DsSvcCleanup" /disable
-schtasks /Change /TN "\Microsoft\Windows\Autochk\Proxy" /disable
-schtasks /Change /TN "\Microsoft\Windows\Clip\License Validation" /disable
-schtasks /Change /TN "\Microsoft\Windows\CloudExperienceHost\CreateObjectTask" /disable
-schtasks /Change /TN "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator" /disable
-schtasks /Change /TN "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" /disable
-schtasks /Change /TN "\Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner" /disable
-schtasks /Change /TN "\Microsoft\Windows\Diagnosis\Scheduled" /disable
-schtasks /Change /TN "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable
-schtasks /Change /TN "\Microsoft\Windows\DiskFootprint\Diagnostics" /disable
-schtasks /Change /TN "\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" /disable
-schtasks /Change /TN "\Microsoft\Windows\FileHistory\File History (maintenance mode)" /disable
-schtasks /Change /TN "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /disable
-schtasks /Change /TN "\Microsoft\Windows\Maintenance\WinSAT" /disable
-schtasks /Change /TN "\Microsoft\Windows\PI\Sqm-Tasks" /disable
-schtasks /Change /TN "\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem" /disable
-schtasks /Change /TN "\Microsoft\Windows\Printing\PrinterCleanupTask" /disable
-schtasks /Change /TN "\Microsoft\Windows\Printing\PrintJobCleanupTask" /disable
-schtasks /Change /TN "\Microsoft\Windows\PushToInstall\LoginCheck" /disable
-schtasks /Change /TN "\Microsoft\Windows\PushToInstall\Registration" /disable
-schtasks /Change /TN "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable
-schtasks /Change /TN "\Microsoft\Windows\Shell\FamilySafetyMonitor" /disable
-schtasks /Change /TN "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable
-schtasks /Change /TN "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /disable
-schtasks /Change /TN "\Microsoft\Windows\Subscription\EnableLicenseAcquisition" /disable
-schtasks /Change /TN "\Microsoft\Windows\Subscription\LicenseAcquisition" /disable
-schtasks /Change /TN "\Microsoft\Windows\Time Synchronization\ForceSynchronizeTime" /disable
-schtasks /Change /TN "\Microsoft\Windows\TPM\Tpm-Maintenance" /disable
-schtasks /Change /TN "\Microsoft\Windows\WaaSMedic\MaintenanceWork" /disable
-schtasks /Change /TN "\Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /disable
-schtasks /Change /TN "\Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /disable
-schtasks /Change /TN "\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /disable
-schtasks /Change /TN "\Microsoft\Windows\Windows Defender\Windows Defender Verification" /disable
-schtasks /Change /TN "\Microsoft\Windows\Windows Error Reporting\QueueReporting" /disable
-schtasks /Change /TN "\Microsoft\Windows\WlanSvc\CDSSync" /disable
-schtasks /Change /TN "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable
-schtasks /Change /TN "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable
-schtasks /Change /TN "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
+schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable
+schtasks /change /tn "\Microsoft\Windows\Application Experience\StartupAppTask" /disable
+schtasks /change /tn "\Microsoft\Windows\ApplicationData\DsSvcCleanup" /disable
+schtasks /change /tn "\Microsoft\Windows\Autochk\Proxy" /disable
+schtasks /change /tn "\Microsoft\Windows\Clip\License Validation" /disable
+schtasks /change /tn "\Microsoft\Windows\CloudExperienceHost\CreateObjectTask" /disable
+schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator" /disable
+schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" /disable
+schtasks /change /tn "\Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner" /disable
+schtasks /change /tn "\Microsoft\Windows\Diagnosis\Scheduled" /disable
+schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable
+schtasks /change /tn "\Microsoft\Windows\DiskFootprint\Diagnostics" /disable
+schtasks /change /tn "\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" /disable
+schtasks /change /tn "\Microsoft\Windows\FileHistory\File History (maintenance mode)" /disable
+schtasks /change /tn "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /disable
+schtasks /change /tn "\Microsoft\Windows\Maintenance\WinSAT" /disable
+schtasks /change /tn "\Microsoft\Windows\PI\Sqm-Tasks" /disable
+schtasks /change /tn "\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem" /disable
+schtasks /change /tn "\Microsoft\Windows\Printing\PrinterCleanupTask" /disable
+schtasks /change /tn "\Microsoft\Windows\Printing\PrintJobCleanupTask" /disable
+schtasks /change /tn "\Microsoft\Windows\PushToInstall\LoginCheck" /disable
+schtasks /change /tn "\Microsoft\Windows\PushToInstall\Registration" /disable
+schtasks /change /tn "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable
+schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyMonitor" /disable
+schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable
+schtasks /change /tn "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /disable
+schtasks /change /tn "\Microsoft\Windows\Subscription\EnableLicenseAcquisition" /disable
+schtasks /change /tn "\Microsoft\Windows\Subscription\LicenseAcquisition" /disable
+schtasks /change /tn "\Microsoft\Windows\Time Synchronization\ForceSynchronizeTime" /disable
+schtasks /change /tn "\Microsoft\Windows\TPM\Tpm-Maintenance" /disable
+schtasks /change /tn "\Microsoft\Windows\WaaSMedic\MaintenanceWork" /disable
+schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /disable
+schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /disable
+schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /disable
+schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Verification" /disable
+schtasks /change /tn "\Microsoft\Windows\Windows Error Reporting\QueueReporting" /disable
+schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable
+schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable
+schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable
+schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
 color 02
 echo [reboot]
 color 04
@@ -399,4 +392,3 @@ color 04
 call :log > %logfile%
 color 02
 pause >nul
-```
