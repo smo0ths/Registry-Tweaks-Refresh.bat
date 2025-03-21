@@ -6,7 +6,7 @@ Windows 11 Registry Tweaks
 
 ```python
 @echo off
-color 01
+color 03
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
@@ -21,12 +21,12 @@ if '%errorlevel%' NEQ '0' (
 :gotAdmin
     pushd "%CD%"
     CD /D "%~dp0"
-color 04
+color 03
 set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.1.6.txt
-color 08
+color 03
 :log
 :: echo [REG_DWORD values 0 = boot 1 = system 2 = automatic 3 = manual 4 = disabled]
-color 06
+color 03
 :: echo [ENABLE WINDOWS UPDATES add or remove ::]
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f
 :: sc start "BITS" && sc config "BITS" start=auto
@@ -44,7 +44,7 @@ color 06
 :: sc start "W32Time" && sc config "W32Time" start=auto
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 3 /f
 :: sc start "appidsvc" && sc config "appidsvc" start=demand
-color 01
+color 03
 echo [DISABLE WINDOWS UPDATES add or remove ::]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 4 /f
 sc stop "BITS" && sc config "BITS" start=disabled
@@ -62,10 +62,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD
 sc stop "W32Time" && sc config "W32Time" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 4 /f
 sc stop "appidsvc" && sc config "appidsvc" start=disabled
-color 06
+color 03
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f
 sc start "msiserver" && sc config "msiserver" start=demand
-color 01
+color 03
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 1 /f
 reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_DWORD /d 400 /f
 reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_DWORD /d 400 /f
@@ -388,7 +388,7 @@ schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
-color 07
+color 03
 echo [reboot]
 call :log > %logfile%
 pause >nul
