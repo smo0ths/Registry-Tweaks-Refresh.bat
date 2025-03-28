@@ -1,6 +1,6 @@
-# Registry-Tweaks-Refresh.bat v0.1.6
+# Registry-Tweaks-Refresh.bat v0.1.7
 Windows 11 Registry Tweaks
-### this is what i use, make the bat file and run it, skim threw the stuff you might not want to change
+### this is what i use, make the bat file and run it (often), skim threw the stuff you might not want to change
 #### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
 #### use Autoruns64, OOSU10 and uninstallers/registry cleaners to get all the other stuff
 
@@ -22,9 +22,9 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 color 03
-set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.1.6.txt
+:: set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.1.7.txt
+:: :log
 color 03
-:log
 :: echo [REG_DWORD values 0 = boot 1 = system 2 = automatic 3 = manual 4 = disabled]
 color 03
 :: echo [ENABLE WINDOWS UPDATES add or remove ::]
@@ -63,8 +63,10 @@ sc stop "W32Time" && sc config "W32Time" start=disabled
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t REG_DWORD /d 4 /f
 sc stop "appidsvc" && sc config "appidsvc" start=disabled
 color 03
+:: sc start "msiserver" && sc config "msiserver" start=demand
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f
-sc start "msiserver" && sc config "msiserver" start=demand
+:: sc stop msiserver
+:: sc stop TrustedInstaller
 color 03
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 1 /f
 reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_DWORD /d 400 /f
@@ -323,6 +325,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV" /v "Start" /t REG_DWORD
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UdkUserSvc" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UnistoreSvc" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UserDataSvc" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f
@@ -336,6 +339,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWO
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 4 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t REG_DWORD /d 4 /f
@@ -390,6 +394,6 @@ schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD6
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
 color 03
 echo [reboot]
-call :log > %logfile%
+:: call :log > %logfile%
 pause >nul
 ```
