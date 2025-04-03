@@ -64,7 +64,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "appidsvc" /t
 sc stop "appidsvc" && sc config "appidsvc" start=disabled
 color 03
 :: sc start "msiserver" && sc config "msiserver" start=demand
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f
 :: sc stop msiserver
 :: sc stop TrustedInstaller
 color 03
