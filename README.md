@@ -1,3 +1,10 @@
+# Registry-Tweaks-Refresh.bat v0.1.8
+Windows 11 Registry Tweaks
+### this is what i use, make the bat file and run it (often/in safemode), skim threw the stuff you might not want to change
+#### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
+#### use Autoruns64, OOSU10 and uninstallers/registry cleaners to get all the other stuff
+
+```python
 @echo off
 color 02
 timeout /t 9
@@ -395,3 +402,4 @@ call :log > %logfile%
 ::
 ::
 pause >nul
+```
