@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.1.8
+# Registry-Tweaks-Refresh.bat v0.2.0
 Windows 11 Registry Tweaks
 ### this is what i use, make the bat file and run it (often/in safemode), skim threw the stuff you might not want to change
 #### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
