@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.2.2
+# Registry-Tweaks-Refresh.bat v0.2.3
 Windows 11 Registry Tweaks
 ### this is what i use, make the bat file and run it, skim threw the stuff you might not want to change
 #### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
@@ -7,8 +7,8 @@ Windows 11 Registry Tweaks
 ```python
 @echo off
 color 02
-::
-::
+
+
 >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 if '%errorlevel%' NEQ '0' (
     echo Requesting administrative privileges...
@@ -24,108 +24,47 @@ if '%errorlevel%' NEQ '0' (
 :gotAdmin
     pushd "%CD%"
     CD /D "%~dp0"
-::
-::
-set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.2.2.txt
+
+
+echo [log stuff]
+set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.2.3.txt
 :log
-::
-::
+
+
 echo [REG_DWORD values 0 = boot 1 = system 2 = automatic 3 = manual 4 = disabled]
-::
-::
-net stop "AppIDSvc"
-net stop "BITS"
-net stop "bthserv"
-net stop "CaptureService"
-net stop "CDPUserSvc"
-net stop "ConsentUxUserSvc"
-net stop "CryptSvc"
-net stop "DevicePickerUserSvc"
-net stop "DevicesFlowUserSvc"
-net stop "DiagTrack"
-net stop "DisplayEnhancementService"
-net stop "dmwappushservice"
-net stop "DoSvc"
-net stop "DusmSvc"
-net stop "FontCache"
-net stop "InstallService"
-net stop "Intel(R) TPM Provisioning Service"
-net stop "iphlpsvc"
-net stop "jhi_service"
-net stop "LanmanServer"
-net stop "LanmanWorkstation"
-net stop "lfsvc"
-net stop "lmhosts"
-net stop "MDCoreSvc"
-net stop "MessagingService"
-net stop "msiserver"
-net stop "NcbService"
-net stop "Ndu"
-net stop "Netman"
-net stop "netprofm"
-net stop "NPSMSvc"
-net stop "OneSyncSvc"
-net stop "P9RdrService"
-net stop "PcaSvc"
-net stop "PenService"
-net stop "PimIndexMaintenanceSvc"
-net stop "PlugPlay"
-net stop "PrintWorkflowUserSvc"
-net stop "QWAVE"
-net stop "RemoteAccess"
-net stop "RemoteRegistry"
-net stop "RmSvc"
-net stop "SecurityHealthService"
-net stop "Sense"
-net stop "Spooler"
-net stop "SSDPSRV"
-net stop "StorSvc"
-net stop "SysMain"
-net stop "TrustedInstaller"
-net stop "UdkUserSvc"
-net stop "UnistoreSvc"
-net stop "UserDataSvc"
-net stop "UsoSvc"
-net stop "W32Time"
-net stop "WaaSMedicSvc"
-net stop "WbioSrvc"
-net stop "WdBoot"
-net stop "WdFilter"
-net stop "WdNisDrv"
-net stop "PrintDeviceConfigurationService"
-net stop "WdNisSvc"
-net stop "webthreatdefsvc"
-net stop "webthreatdefusersvc"
-net stop "WinDefend"
-net stop "Winmgmt"
-net stop "wlidsvc"
-net stop "WMIRegistrationService"
-net stop "WpnService"
-net stop "wscsvc"
-net stop "WSearch"
-net stop "wuauserv"
-net stop "XblAuthManager"
-net stop "XblGameSave"
-net stop "xboxgip"
-net stop "XboxGipSvc"
-net stop "XboxNetApiSvc"
-::
-::
-echo [1]
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d "3" /f
+
+
+echo [add/remove "::" for disable updates]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d "3" /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d "3" /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d "4" /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d "4" /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d "4" /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d "4" /f
+
+
+:: echo [add/remove "::" for enable updates]
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d "2" /f
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d "2" /f
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d "2" /f
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d "3" /f
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d "2" /f
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d "3" /f
+
+
+echo [1]
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d "4" /f
+
+
+echo [1]
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d "3" /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcbService" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller" /v "Start" /t REG_DWORD /d "3" /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d "3" /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d "3" /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d "3" /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d "3" /f
-::
-::
-echo [2]
+
+
+echo [1]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthserv" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CaptureService" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CDPUserSvc" /v "Start" /t REG_DWORD /d "3" /f
@@ -138,7 +77,6 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DusmSvc" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MessagingService" /v "Start" /t REG_DWORD /d "3" /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcbService" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD /d "3" /f
@@ -148,15 +86,15 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DW
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PimIndexMaintenanceSvc" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d "3" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\xboxgip" /v "Start" /t REG_DWORD /d "3" /f
-::
-::
-echo [3]
+
+
+echo [1]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d "2" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" /v "Status" /t REG_DWORD /d "0" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d "2" /f
-::
-::
-echo [4]
+
+
+echo [1]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DiagTrack" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d "4" /f
@@ -194,9 +132,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t RE
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblGameSave" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxGipSvc" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v "Start" /t REG_DWORD /d "4" /f
-::
-::
-echo [5]
+
+
+echo [1]
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v "VerifiedAndReputablePolicyState" /t REG_DWORD /d "0" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled" /t REG_DWORD /d "1" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "IRQ8Priority" /t REG_DWORD /d "1" /f
@@ -205,14 +143,14 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Remote Assistance" /v "fAllowToGe
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "ClearPageFileAtShutdown" /t REG_DWORD /d "0" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "HibernateEnabled" /t REG_DWORD /d "0" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d "1" /f
-::
-::
-echo [6]
+
+
+echo [1]
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener" /v "Start" /t REG_DWORD /d "0" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Start" /t REG_DWORD /d "0" /f
-::
-::
-echo [for printer]
+
+
+echo [printer]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "AutoShareWks" /t REG_DWORD /d "0" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "IRPStackSize" /t REG_DWORD /d "30" /f
@@ -220,8 +158,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation" /v "Start" /t
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintDeviceConfigurationService" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintWorkflowUserSvc" /v "Start" /t REG_DWORD /d "4" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d "4" /f
-::
-::
+
+
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d "1" /f
 reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_DWORD /d "400" /f
 reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_DWORD /d "400" /f
@@ -428,13 +366,13 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\WMDRM" /v "DisableOnline" /t REG_DWORD
 reg add "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer" /v "SmartScreenEnabled" /t REG_SZ /d "off" /f
 reg add "HKLM\SYSTEM\Maps" /v "AutoUpdateEnabled" /t REG_DWORD /d "0" /f
 reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d "1" /f
-::
-::
+
+
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate" /f
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\EdgeUpdate" /f
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate" /f
-::
-::
+
+
 schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable
 schtasks /change /tn "\Microsoft\Windows\Application Experience\StartupAppTask" /disable
 schtasks /change /tn "\Microsoft\Windows\ApplicationData\DsSvcCleanup" /disable
@@ -475,13 +413,14 @@ schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
-::
-::
+
+
 echo [reboot]
-::
-::
+
+
+echo [log stuff]
 call :log > %logfile%
-::
-::
+
+
 pause >nul
 ```
