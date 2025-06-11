@@ -27,7 +27,7 @@ if '%errorlevel%' NEQ '0' (
 
 
 echo [log]
-set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh-v0.3.2.txt
+set logfile=%userprofile%\desktop\Registry-Tweaks-Refresh.txt
 :log
 
 
@@ -443,7 +443,7 @@ schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD6
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable
 
 
-echo [reboot and check Registry-Tweaks-Refresh-v0.2.8.txt]
+echo [reboot and check Registry-Tweaks-Refresh.txt]
 
 
 echo [log]
