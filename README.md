@@ -420,7 +420,7 @@ schtasks /change /tn "\Microsoft\Windows\Printing\PrintJobCleanupTask" /disable 
 schtasks /change /tn "\Microsoft\Windows\PushToInstall\LoginCheck" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\PushToInstall\Registration" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable >> "%log%" 2>&1
-schtasks /Change /TN "\Microsoft\Windows\Servicing\StartComponentCleanup" /disable >> "%log%" 2>&1
+schtasks /change /tn "\Microsoft\Windows\Servicing\StartComponentCleanup" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyMonitor" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\Shell\IndexerAutomaticMaintenance" /disable >> "%log%" 2>&1
