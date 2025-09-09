@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.4.1
+# Registry-Tweaks-Refresh.bat v0.4.2
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it, skim threw the stuff you might not want to change and you need to find 2 of your {GUID}'s
 #### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
@@ -10,6 +10,23 @@ color 02
 title %~nx0 - %date% %time%
 set "log=%userprofile%\desktop\registry-tweaks-refresh.txt"
 
+:restorechoice
+set /P restorechoice=y creates restore point, n skips [y/n]:
+if /I "%restorechoice%"=="y" goto yesrestore
+if /I "%restorechoice%"=="n" goto norestore 
+goto invalidchoice
+
+:yesrestore
+echo [creating restore point] >> "%log%"
+echo [creating restore point]
+wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "before Registry-Tweaks-Refresh v0.4.2.bat", 100, 7
+goto updatechoice
+
+:norestore
+echo [no restore point created] >> "%log%"
+echo [no restore point created]
+goto updatechoice
+
 :updatechoice
 set /P updatechoice=y disables windows updates, n resets/enables/defaults [y/n]:
 if /I "%updatechoice%"=="y" goto disableupdates
@@ -17,7 +34,7 @@ if /I "%updatechoice%"=="n" goto enableupdates
 goto invalidchoice
 
 :disableupdates
-echo [disabling windows updates] >> "%log%" 2>&1
+echo [disabling windows updates] >> "%log%"
 echo [disabling windows updates]
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "ExcludeWUDrivers" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -31,7 +48,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWOR
 goto printerchoice
 
 :enableupdates
-echo [enabling windows updates] >> "%log%" 2>&1
+echo [enabling windows updates] >> "%log%"
 echo [enabling windows updates]
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "ExcludeWUDrivers" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -51,7 +68,7 @@ if /I "%printerchoice%"=="n" goto enableprinter
 goto invalidchoice
 
 :disableprinter
-echo [disabling printer] >> "%log%" 2>&1
+echo [disabling printer] >> "%log%"
 echo [disabling printer]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintDeviceConfigurationService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -59,7 +76,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintWorkflowUserSvc" /v "Start"
 goto copilotchoice
 
 :enableprinter
-echo [enabling printer] >> "%log%" 2>&1
+echo [enabling printer] >> "%log%"
 echo [enabling printer]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintDeviceConfigurationService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
@@ -73,14 +90,14 @@ if /I "%copilotchoice%"=="n" goto enablecopilot
 goto invalidchoice
 
 :disablecopilot
-echo [disabling windows copilot] >> "%log%" 2>&1
+echo [disabling windows copilot] >> "%log%"
 echo [disabling windows copilot]
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v "TurnOffWindowsCopilot" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSAIFabricSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 goto interestschoice
 
 :enablecopilot
-echo [enabling windows copilot] >> "%log%" 2>&1
+echo [enabling windows copilot] >> "%log%"
 echo [enabling windows copilot]
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v "TurnOffWindowsCopilot" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSAIFabricSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -93,19 +110,41 @@ if /I "%interestschoice%"=="n" goto enableinterests
 goto invalidchoice
 
 :disableinterests
-echo [disable news and interests on taskbar 1 manually] >> "%log%" 2>&1
-echo [disable news and interests on taskbar 1 manually]
+echo [disable news and interests/notifications ect on taskbar 1 manually] >> "%log%"
+echo [disable news and interests/notifications ect on taskbar 1 manually]
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /t REG_DWORD /d 0 /f
-goto endscript
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+goto touchchoice
 
 :enableinterests
-echo [disable news and interests on taskbar 1 manually] >> "%log%" 2>&1
-echo [disable news and interests on taskbar 1 manually]
+echo [enable news and interests on taskbar 1 manually] >> "%log%"
+echo [enable news and interests on taskbar 1 manually]
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /f >> "%log%" 2>&1
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /f >> "%log%" 2>&1
+goto touchchoice
+
+:touchchoice
+set /P touchchoice=y disables touch screen stuff, n resets/enables/defaults [y/n]:
+if /I "%touchchoice%"=="y" goto disabletouch
+if /I "%touchchoice%"=="n" goto enabletouch
+goto invalidchoice
+
+:disabletouch
+echo [disable touch screen stuff] >> "%log%"
+echo [disable touch screen stuff]
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+goto endscript
+
+:enabletouch
+echo [enable touch screen stuff] >> "%log%"
+echo [enable touch screen stuff]
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 goto endscript
 
 :invalidchoice
@@ -113,7 +152,7 @@ echo Invalid command run bat again
 goto endscript
 :endscript
 
-echo [find your {GUID} in the Interfaces address to apply Tcpip tweaks correctly] >> "%log%" 2>&1
+echo [find your {GUID} in the Interfaces address to apply Tcpip tweaks correctly] >> "%log%"
 echo [find your {GUID} in the Interfaces address to apply Tcpip tweaks correctly]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{8e2bcbf1-0f7c-4435-bd5b-88cabdedbf02}" /v "DisableTaskOffload" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{8e2bcbf1-0f7c-4435-bd5b-88cabdedbf02}" /v "Tcp1323Opts" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -121,17 +160,17 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{8e2
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{8e2bcbf1-0f7c-4435-bd5b-88cabdedbf02}" /v "TcpDelAckTicks" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{8e2bcbf1-0f7c-4435-bd5b-88cabdedbf02}" /v "TcpNoDelay" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 
-:: echo [Enhanced Fullscreen Exclusive/Fullscreen Exclusive disabled] >> "%log%" 2>&1
+:: echo [Enhanced Fullscreen Exclusive/Fullscreen Exclusive disabled] >> "%log%"
 :: echo [Enhanced Fullscreen Exclusive/Fullscreen Exclusive disabled]
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 
-echo [Enhanced Fullscreen Exclusive/Fullscreen Exclusive enabled] >> "%log%" 2>&1
+echo [Enhanced Fullscreen Exclusive/Fullscreen Exclusive enabled] >> "%log%"
 echo [Enhanced Fullscreen Exclusive/Fullscreen Exclusive enabled]
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
-echo [disabling bluetooth] >> "%log%" 2>&1
+echo [disabling bluetooth] >> "%log%"
 echo [disabling bluetooth]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTAGService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthav" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -142,18 +181,18 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\DeviceAssociationService" /v "St
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DevicePickerUserSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DevicesFlowUserSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo [disables all IPv6 components] >> "%log%" 2>&1
+echo [disables all IPv6 components] >> "%log%"
 echo [disables all IPv6 components]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 255 /f >> "%log%" 2>&1
 
-echo [REG_SZ] >> "%log%" 2>&1
+echo [REG_SZ] >> "%log%"
 echo [REG_SZ]
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v "Value" /t REG_SZ /d Deny /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v "SmartScreenEnabled" /t REG_SZ /d off /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\SQMClient" /v "CorporateSQMURL" /t REG_SZ /d 0.0.0.0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\SmartScreen" /v "ConfigureAppInstallControl" /t REG_SZ /d Anywhere /f >> "%log%" 2>&1
 
-echo [disabling sensors] >> "%log%" 2>&1
+echo [disabling sensors] >> "%log%"
 echo [disabling sensors]
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{09485F5A-759E-4A45-B622-5C7F2FCE985E}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{5C5C4656-0E77-4F44-BF4C-8C0C8A76E8A7}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -164,19 +203,19 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{C04D7B5C-9C2F-4C32-9C47-5C6E2F0E6D98}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SensorService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo [SMB stuff] >> "%log%" 2>&1
+echo [SMB stuff] >> "%log%"
 echo [SMB stuff]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "AutoShareWks" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo [msec do manually] >> "%log%" 2>&1
+echo [msec do manually] >> "%log%"
 echo [msec do manually]
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo [msec] >> "%log%" 2>&1
+echo [msec] >> "%log%"
 echo [msec]
 reg add "HKLM\SOFTWARE\Microsoft\RemovalTools\MpGears" /v "HeartbeatTrackingIndex" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MRT" /v "DontOfferThroughWUAU" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -206,6 +245,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WTDS\Components" /v "NotifyPas
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WTDS\Components" /v "NotifyUnsafeApp" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WTDS\Components" /v "ServiceEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Sense" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -215,91 +255,99 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t R
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo [services do manually] >> "%log%" 2>&1
+echo [disabling network resource sharing (apple/smart tv/etc.)] >> "%log%"
+echo [disabling network resource sharing (apple/smart tv/etc.)]
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\fdPHost" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\FDResPub" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo [services do manually] >> "%log%"
 echo [services do manually]
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
-echo [various disabled services] >> "%log%" 2>&1
+echo [caching/indexing for slow drives disabled] >> "%log%"
+echo [caching/indexing for slow drives disabled]
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo [universal windows platform(UWP/app model)/store/backend/framework] >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppReadiness" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppXSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\camsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\CDPUserSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\ClipSVC" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcbService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\OneSyncSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\StateRepository" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\TimeBrokerSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\TokenBroker" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UdkUserSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UnistoreSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UserDataSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+
+echo [various disabled services] >> "%log%"
 echo [various disabled services]
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BcastDVRUserService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\camsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CaptureService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\CDPUserSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\cbdhsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DiagTrack" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\dmwappushservice" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DusmSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FrameServer" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FrameServerMonitor" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\jhi_service" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lfsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\MessagingService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Ndu" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\P9RdrService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PhoneSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PimIndexMaintenanceSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\QWAVE" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteRegistry" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RetailDemo" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RmSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Sense" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\StiSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\UdkUserSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\UnistoreSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\UserDataSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UevAgentService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WManSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblGameSave" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxGipSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo [various services] >> "%log%" 2>&1
+echo [various services] >> "%log%"
 echo [various services]
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppReadiness" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppXSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\camsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\cbdhsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\ClipSVC" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\MessagingService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcbService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\OneSyncSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\StateRepository" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\StiSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TextInputManagementService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\TimeBrokerSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\TokenBroker" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WManSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\xboxgip" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
-echo [disables other windows ai stuff] >> "%log%" 2>&1
+echo [disables other windows ai stuff] >> "%log%"
 echo [disables other windows ai stuff]
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsAADCloudSearchEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsCloudSearchEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -319,7 +367,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "DisableImageCre
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "SetCopilotHardwareKey" /t REG_SZ /d "" /f >> "%log%" 2>&1
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "SetDenyUriListForRecall" /f >> "%log%" 2>&1
 
-echo [bunch of tweaks] >> "%log%" 2>&1
+echo [bunch of tweaks] >> "%log%"
 echo [bunch of tweaks]
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_DWORD /d 400 /f >> "%log%" 2>&1
@@ -472,7 +520,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Sta
 reg add "HKLM\SYSTEM\Maps" /v "AutoUpdateEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 
-echo [edge stuff needs your {GUID} found in taskschd.msc to disable EdgeUpdateTask] >> "%log%" 2>&1
+echo [edge stuff needs your {GUID} found in taskschd.msc to disable EdgeUpdateTask] >> "%log%"
 echo [edge stuff needs your {GUID} found in taskschd.msc to disable EdgeUpdateTask]
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AlternateErrorPagesEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AutofillAddressEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -494,7 +542,7 @@ reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\E
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable >> "%log%" 2>&1
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable >> "%log%" 2>&1
 
-echo [schtasks cannot disable] >> "%log%" 2>&1
+echo [schtasks cannot disable] >> "%log%"
 echo [schtasks cannot disable]
 schtasks /change /tn "\Microsoft\Windows\Shell\UpdateUserPictureTask" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Report policies" /disable >> "%log%" 2>&1
@@ -507,7 +555,7 @@ schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UIEOrchestrator" /di
 schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UUS Failover Task" /disable >> "%log%" 2>&1
 
-echo [schtasks] >> "%log%" 2>&1
+echo [schtasks] >> "%log%"
 echo [schtasks]
 schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\Application Experience\PcaPatchDbTask" /disable >> "%log%" 2>&1
@@ -566,16 +614,16 @@ schtasks /change /tn "\Microsoft\Windows\Windows Error Reporting\QueueReporting"
 schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable >> "%log%" 2>&1
 
-echo [deletes] >> "%log%" 2>&1
+echo [deletes] >> "%log%"
 echo [deletes]
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate" /f >> "%log%" 2>&1
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate" /f >> "%log%" 2>&1
 
-echo [after any windows updates or repairs you will probably need to do this again] >> "%log%" 2>&1
+echo [after any windows updates or repairs you will probably need to do this again] >> "%log%"
 echo [after any windows updates or repairs you will probably need to do this again]
-echo [check registry-tweaks-refresh.txt on your desktop and force errors with a regedit (like RegCool)] >> "%log%" 2>&1
-echo [check registry-tweaks-refresh.txt on your desktop and force errors with a regedit (like RegCool)]
-echo [reboot for changes] >> "%log%" 2>&1
+echo [check registry-tweaks-refresh.txt on your desktop and force errors with a regedit (like RegCool.exe)] >> "%log%"
+echo [check registry-tweaks-refresh.txt on your desktop and force errors with a regedit (like RegCool.exe)]
+echo [reboot for changes] >> "%log%"
 echo [reboot for changes]
 
 pause
