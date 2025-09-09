@@ -11,20 +11,20 @@ title %~nx0 - %date% %time%
 set "log=%userprofile%\desktop\registry-tweaks-refresh.txt"
 
 :restorechoice
-set /P restorechoice=y creates restore point, n skips [y/n]:
+set /P restorechoice=y opens system properties, n skips [y/n]:
 if /I "%restorechoice%"=="y" goto yesrestore
 if /I "%restorechoice%"=="n" goto norestore 
 goto invalidchoice
 
 :yesrestore
-echo [creating restore point] >> "%log%"
-echo [creating restore point]
-wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "before Registry-Tweaks-Refresh v0.4.2.bat", 100, 7
+echo [click on protected drive and create] >> "%log%"
+echo [click on protected drive and create]
+%windir%\System32\SystemPropertiesProtection.exe
 goto updatechoice
 
 :norestore
-echo [no restore point created] >> "%log%"
-echo [no restore point created]
+echo [skipping restore point] >> "%log%"
+echo [skipping restore point]
 goto updatechoice
 
 :updatechoice
