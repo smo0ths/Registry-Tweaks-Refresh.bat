@@ -1,10 +1,5 @@
 
-
-
 # dont use right now breaks connecting to wifi idky wip
-
-
-
 
 # Registry-Tweaks-Refresh.bat v0.4.3
 Windows 11 Registry Tweaks
@@ -51,7 +46,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-echo HKLM\SYSTEM\CurrentControlSet\Services\wscsvc (set REG_DWORD 4) >> "%log%"
+echo HKLM\SYSTEM\CurrentControlSet\Services\wscsvc (set REG_DWORD 4 and 2 for enable) >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto printerchoice
 
@@ -65,6 +60,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+echo HKLM\SYSTEM\CurrentControlSet\Services\wscsvc (set REG_DWORD 2 and 4 for disable) >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto printerchoice
 
@@ -124,9 +120,9 @@ goto touchchoice
 
 :enableinterests
 echo [ENABLE NEWS AND INTERESTS ON TASKBAR 1 MANUALLY] && cls
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto touchchoice
