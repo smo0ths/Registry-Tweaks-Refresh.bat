@@ -1,7 +1,7 @@
 # Registry-Tweaks-Refresh.bat v0.4.4
 Windows 11 Registry Tweaks
-#### this is what i use, make the bat file and run it in safe mode as admin, skim threw if you want
-#### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
+#### this is what i use, make the bat file and run it often (after updates)
+#### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive)
 #### use Autoruns64, OOSU10++ and uninstallers/registry cleaners to get all the other stuff
 
 ```python
