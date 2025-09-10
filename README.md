@@ -506,22 +506,6 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "CortanaEnabl
 reg add "HKLM\SOFTWARE\Microsoft\Windows\ScheduledDiagnostics" /v "EnabledExecution" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows\Windows Reporting" /v "Disabled" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [EXPLORER TWEAKS] & timeout /nobreak /t 1 >nul & cls
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "IconsOnly" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "LaunchTo" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowSuperHidden" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowTaskViewButton" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" /v "EnthusiastMode" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v "SmartScreenEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" /v "ShowHibernateOption" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoAutorun" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoDriveTypeAutoRun" /t REG_DWORD /d 255 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableSearchBoxSuggestions" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "HidePeopleBar" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "HideSCAMeetNow" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-
 echo [HKLM POLICIES] & timeout /nobreak /t 1 >nul & cls
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" /v "NoActiveHelp" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" /v "NoExplicitFeedback" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
