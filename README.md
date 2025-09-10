@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.4.5
+# Registry-Tweaks-Refresh.bat v0.4.6
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive)
@@ -131,13 +131,13 @@ goto touchchoice
 :enableinterests
 echo [ENABLE NEWS AND INTERESTS/NOTIFICATIONS/WIDGETS ECT ON TASKBAR 1 MANUALLY] & timeout /nobreak /t 1 >nul & cls
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableNotificationCenter" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto touchchoice
 
 :touchchoice
@@ -148,11 +148,47 @@ goto invalidchoice
 
 :disabletouch
 echo [DISABLE TOUCH SCREEN STUFF] & timeout /nobreak /t 1 >nul & cls
+reg add "HKCU\Control Panel\Accessibility" /v "TouchFeedback" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\Control Panel\Desktop" /v "TouchGestureSetting" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "DisableNewKeyboardExperience" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableCompatibilityKeyboard" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableDesktopModeAutoInvoke" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "KeyboardLayoutPreference" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "UserKeyboardScalingFactor" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TouchMode" /v "ShowTouchModeButton" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Wisp\Pen\Flicks" /v "EnableFlicks" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Wisp\Pen\PenFeedback" /v "TurnOnPressAndHold" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\Software\Microsoft\Wisp\Touch" /v "TouchGate" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "TipbandDesiredVisibility" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell" /v "TabletMode" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PrecisionTouchPad" /v "EnableVirtualTouchpad" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\TabletPC" /v "TurnOffTouchInput" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "3FingerTapAction" /t REG_DWORD /d 0x0000000 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "4FingerTapAction" /t REG_DWORD /d 0x0000000 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\TabletPC" /v "EnableTouch" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto bluechoice
 
 :enabletouch
 echo [ENABLE TOUCH SCREEN STUFF] & timeout /nobreak /t 1 >nul & cls
+reg add "HKCU\Control Panel\Accessibility" /v "TouchFeedback" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\Control Panel\Desktop" /v "TouchGestureSetting" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "DisableNewKeyboardExperience" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableCompatibilityKeyboard" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableDesktopModeAutoInvoke" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "KeyboardLayoutPreference" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "UserKeyboardScalingFactor" /t REG_DWORD /d 100 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TouchMode" /v "ShowTouchModeButton" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Wisp\Pen\Flicks" /v "EnableFlicks" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Wisp\Pen\PenFeedback" /v "TurnOnPressAndHold" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\Software\Microsoft\Wisp\Touch" /v "TouchGate" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "TipbandDesiredVisibility" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell" /v "TabletMode" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PrecisionTouchPad" /v "EnableVirtualTouchpad" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\TabletPC" /v "TurnOffTouchInput" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "3FingerTapAction" /t REG_DWORD /d 0x00000a6 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "4FingerTapAction" /t REG_DWORD /d 0x30115b27 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\TabletPC" /v "EnableTouch" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto bluechoice
 
@@ -380,8 +416,8 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "DisableAIDataAn
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "DisableCocreator" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "DisableGenerativeFill" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "DisableImageCreator" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "SetCopilotHardwareKey" /t REG_SZ /d "" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "SetDenyUriListForRecall" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "SetCopilotHardwareKey" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "SetDenyUriListForRecall" /t REG_SZ /d "*" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
 echo [DISABLE AUTOCORRECT/SPELLCHECK/SUGGESTIONS/PREDICTION/ECT] & timeout /nobreak /t 1 >nul & cls
 reg add "HKCU\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" /v "HarvestContacts" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -679,9 +715,14 @@ schtasks /change /tn "\Microsoft\Windows\Windows Reporting\QueueReporting" /disa
 schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [DELETES] & timeout /nobreak /t 1 >nul & cls
+echo [UPDATE DELETES] & timeout /nobreak /t 1 >nul & cls
+reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\ClipchampUpdate" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OfficeHubUpdate" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OneDriveSetup" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\TeamsMachineInstaller" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\WebView2RuntimeUpdate" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
 echo [AFTER UPDATES/REPAIRS RUN AGAIN, CHECK registry-tweaks-refresh.txt FORCE LOG ENTRIES IN A PROGRAM LIKE RegCool.exe] & timeout /nobreak /t 1 >nul & cls
 echo [AFTER UPDATES/REPAIRS RUN AGAIN, CHECK registry-tweaks-refresh.txt FORCE LOG ENTRIES IN A PROGRAM LIKE RegCool.exe] >> "%log%"
