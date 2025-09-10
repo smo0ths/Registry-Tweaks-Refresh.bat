@@ -1,6 +1,6 @@
-# Registry-Tweaks-Refresh.bat v0.4.3
+# Registry-Tweaks-Refresh.bat v0.4.4
 Windows 11 Registry Tweaks
-#### this is what i use, make the bat file and run it, skim threw the stuff you might not want to change
+#### this is what i use, make the bat file and run it in safe mode as admin, skim threw if you want
 #### %windir%\System32\SystemPropertiesProtection.exe (open and create one)
 #### use Autoruns64, OOSU10++ and uninstallers/registry cleaners to get all the other stuff
 
@@ -19,12 +19,16 @@ if /I "%restorechoice%"=="N" goto norestore
 goto invalidchoice
 
 :yesrestore
-echo [CLICK ON PROTECTED DRIVE AND CREATE] && cls
+echo [CLICK ON PROTECTED DRIVE AND CREATE] 
+timeout /nobreak /t 1 >nul
+cls
 "%windir%\System32\SystemPropertiesProtection.exe"
 goto updatechoice
 
 :norestore
-echo [SKIPPING RESTORE POINT] && cls
+echo [SKIPPING RESTORE POINT] 
+timeout /nobreak /t 1 >nul
+cls
 goto updatechoice
 
 :updatechoice
@@ -34,7 +38,9 @@ if /I "%updatechoice%"=="N" goto enableupdates
 goto invalidchoice
 
 :disableupdates
-echo [DISABLING WINDOWS UPDATES 1 maually] && cls
+echo [DISABLING WINDOWS UPDATES 1 maually] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "ExcludeWUDrivers" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -48,7 +54,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWOR
 goto printerchoice
 
 :enableupdates
-echo [ENABLING WINDOWS UPDATES] && cls
+echo [ENABLING WINDOWS UPDATES] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "ExcludeWUDrivers" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -68,14 +76,18 @@ if /I "%printerchoice%"=="N" goto enableprinter
 goto invalidchoice
 
 :disableprinter
-echo [DISABLING PRINTER] && cls
+echo [DISABLING PRINTER] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintDeviceConfigurationService" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintWorkflowUserSvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto copilotchoice
 
 :enableprinter
-echo [ENABLING PRINTER] && cls
+echo [ENABLING PRINTER] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintDeviceConfigurationService" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintWorkflowUserSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -88,13 +100,17 @@ if /I "%copilotchoice%"=="N" goto enablecopilot
 goto invalidchoice
 
 :disablecopilot
-echo [DISABLING WINDOWS COPILOT] && cls
+echo [DISABLING WINDOWS COPILOT] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v "TurnOffWindowsCopilot" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSAIFabricSvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto interestschoice
 
 :enablecopilot
-echo [ENABLING WINDOWS COPILOT] && cls
+echo [ENABLING WINDOWS COPILOT] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v "TurnOffWindowsCopilot" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSAIFabricSvc" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto interestschoice
@@ -106,17 +122,25 @@ if /I "%interestschoice%"=="N" goto enableinterests
 goto invalidchoice
 
 :disableinterests
-echo [DISABLE NEWS AND INTERESTS/NOTIFICATIONS ECT ON TASKBAR 1 MANUALLY] && cls
+echo [DISABLE NEWS AND INTERESTS/NOTIFICATIONS/WIDGETS ECT ON TASKBAR 1 MANUALLY] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-echo HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds (set ShellFeedsTaskbarViewMode REG_DWORD to 4) >> "%log%"
+echo HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds (set ShellFeedsTaskbarViewMode REG_DWORD to 2) >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableNotificationCenter" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto touchchoice
 
 :enableinterests
-echo [ENABLE NEWS AND INTERESTS ON TASKBAR 1 MANUALLY] && cls
+echo [ENABLE NEWS AND INTERESTS/NOTIFICATIONS/WIDGETS ECT ON TASKBAR 1 MANUALLY] 
+timeout /nobreak /t 1 >nul
+cls
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableNotificationCenter" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -131,12 +155,16 @@ if /I "%touchchoice%"=="N" goto enabletouch
 goto invalidchoice
 
 :disabletouch
-echo [DISABLE TOUCH SCREEN STUFF] && cls
+echo [DISABLE TOUCH SCREEN STUFF] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto bluechoice
 
 :enabletouch
-echo [ENABLE TOUCH SCREEN STUFF] && cls
+echo [ENABLE TOUCH SCREEN STUFF] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto bluechoice
 
@@ -147,12 +175,16 @@ if /I "%bluechoice%"=="N" goto yesblue
 goto invalidchoice
 
 :noblue
-echo [DISABLING BLUETOOTH] && cls
+echo [DISABLING BLUETOOTH] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthserv" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto endscript
 
 :yesblue
-echo [ENABLING BLUETOOTH] && cls   
+echo [ENABLING BLUETOOTH] 
+timeout /nobreak /t 1 >nul
+cls   
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthserv" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 goto endscript
 
@@ -170,7 +202,9 @@ for %%A in (. . .) do (
 )
 echo.
 
-echo [TCPIP TWEAKS] && cls
+echo [TCPIP TWEAKS] 
+timeout /nobreak /t 1 >nul
+cls
 for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
     set "guid=%%G"
     goto :gotguid
@@ -187,24 +221,34 @@ reg add "%regpath%" /v "TcpNoDelay"       /t REG_DWORD /d 1 /f 2>&1 | findstr /v
 goto :gotnext
 :gotnext
 
-:: echo [ENHANCED FULLSCREEN EXCLUSIVE/FULLSCREEN EXCLUSIVE DISABLED] && cls
+:: echo [ENHANCED FULLSCREEN EXCLUSIVE/FULLSCREEN EXCLUSIVE DISABLED] 
+timeout /nobreak /t 1 >nul
+cls
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [ENHANCED FULLSCREEN EXCLUSIVE/FULLSCREEN EXCLUSIVE ENABLED] && cls
+echo [ENHANCED FULLSCREEN EXCLUSIVE/FULLSCREEN EXCLUSIVE ENABLED] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [DISABLES ALL IPV6 COMPONENTS] && cls
+echo [DISABLES ALL IPV6 COMPONENTS] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 255 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [WIFI STUFF] && cls
+echo [WIFI STUFF] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" /v "Value" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" /v "Value" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" /v "AutoConnectAllowedOEM" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WiFi\WiFiTask" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [DISABLING SENSORS] && cls
+echo [DISABLING SENSORS] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{09485F5A-759E-4A45-B622-5C7F2FCE985E}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{5C5C4656-0E77-4F44-BF4C-8C0C8A76E8A7}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{5C7C1A12-3B7D-4B4B-9F4E-B1A1B6E0E1D8}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -214,12 +258,16 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{C04D7B5C-9C2F-4C32-9C47-5C6E2F0E6D98}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SensorService" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [SMB STUFF] && cls
+echo [SMB STUFF] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "AutoShareWks" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [MSEC DO MANUALLY] && cls
+echo [MSEC DO MANUALLY] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 echo HKLM\SOFTWARE\Microsoft\Windows Defender (add REG_DWORD DisableAntiSpyware 1) >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -227,7 +275,9 @@ echo HKLM\SOFTWARE\Microsoft\Windows Defender (add REG_DWORD DisableAntiVirus 1)
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 echo HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 4) >> "%log%"
 
-echo [MSEC] && cls
+echo [MSEC] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Microsoft\RemovalTools\MpGears" /v "HeartbeatTrackingIndex" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MRT" /v "DontOfferThroughWUAU" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MRT" /v "DontReportInfectionInformation" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -261,23 +311,21 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t R
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [DISABLING NETWORK RESOURCE SHARING (APPLE/SMART TV/ETC.)] && cls
+echo [DISABLING NETWORK RESOURCE SHARING (APPLE/SMART TV/ETC.)] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\fdPHost" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FDResPub" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [SERVICES DO MANUALLY] && cls
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-echo HKLM\SYSTEM\CurrentControlSet\Services\TrkWks (set REG_DWORD 2) >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-echo HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller (set REG_DWORD 3) >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-echo HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 3) >> "%log%"
-
-echo [CACHING/INDEXING FOR SLOW DRIVES DISABLED] && cls
+echo [CACHING/INDEXING FOR SLOW DRIVES DISABLED] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [UNIVERSAL WINDOWS PLATFORM(UWP/APP MODEL)/STORE/BACKEND/FRAMEWORK] && cls
+echo [UNIVERSAL WINDOWS PLATFORM(UWP/APP MODEL)/STORE/BACKEND/FRAMEWORK] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppReadiness" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppXSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\camsvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -289,11 +337,15 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\OneSyncSvc" /v "Start" /t REG_DW
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StateRepository" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TimeBrokerSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TokenBroker" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+echo HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller (set REG_DWORD 3) >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UdkUserSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UnistoreSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UserDataSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [VARIOUS DISABLED SERVICES] && cls
+echo [VARIOUS DISABLED SERVICES] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BcastDVRUserService" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CaptureService" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -331,7 +383,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblGameSave" /v "Start" /t REG_D
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxGipSvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [VARIOUS SERVICES] && cls
+echo [VARIOUS SERVICES] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -346,11 +400,17 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWOR
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TextInputManagementService" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+echo HKLM\SYSTEM\CurrentControlSet\Services\TrkWks (set REG_DWORD 2) >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+echo HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 3) >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\xboxgip" /v "Start" /t REG_DWORD /d 3 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [DISABLES OTHER WINDOWS AI STUFF] && cls
+echo [DISABLES OTHER WINDOWS AI STUFF] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsAADCloudSearchEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsCloudSearchEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsDeviceSearchHistoryEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -369,7 +429,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "DisableImageCre
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "SetCopilotHardwareKey" /t REG_SZ /d "" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" /v "SetDenyUriListForRecall" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [BUNCH OF TWEAKS] && cls
+echo [CONTROL PANEL TWEAKS] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\Control Panel\Desktop" /v "DragFullWindows" /t REG_SZ /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\Control Panel\Desktop" /v "DragHeight" /t REG_SZ /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -379,19 +441,34 @@ reg add "HKCU\Control Panel\Desktop" /v "SmoothScroll" /t REG_SZ /d 1 /f 2>&1 | 
 reg add "HKCU\Control Panel\Desktop" /v "WaitToKillAppTimeout" /t REG_SZ /d 3000 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v "MinAnimate" /t REG_SZ /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_DWORD /d 200 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [GAME TWEAKS] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AllowAutoGameMode" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AutoGameModeEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "ShowStartupPanel" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Input\TIPC" /v "Enabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\InputPersonalization" /v "RestrictImplicitInkCollection" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\InputPersonalization" /v "RestrictImplicitTextCollection" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" /v "HarvestContacts" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DXGIHonorFSEWindowsCompatible" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_HonorUserFSEBehaviorMode" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [HKCU SIUF] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKCU\SOFTWARE\Microsoft\Siuf\Rules" /v "NumberOfSIUFInPeriod" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Siuf\Rules" /v "PeriodInNanoSeconds" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [ALLOW BACKGROUND APPS AT THE SYSTEM LEVEL] 
+timeout /nobreak /t 1 >nul
+cls
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsRunInBackground" /t REG_DWORD /d 2 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [HKCU CURRENTVERSION] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Accessibility" /v "Animation" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v "Enabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost" /v "EnableWebContentEvaluation" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v "Value" /t REG_SZ /d Deny /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "ContentDeliveryAllowed" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "FeatureManagementEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -421,11 +498,9 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "I
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "LaunchTo" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowSuperHidden" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowTaskViewButton" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v "PeopleBand" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" /v "EnthusiastMode" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AllowGameDVR" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "HideSCAMeetNow" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "BingSearchEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "CanCortanaBeEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "CortanaConsent" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -436,10 +511,10 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTas
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "EnableTransparency" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\UserProfileEngagement" /v "ScoobeSystemSettingEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Windows Search" /v "CortanaConsent" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" /v "NoExplicitFeedback" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DXGIHonorFSEWindowsCompatible" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_HonorUserFSEBehaviorMode" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [HKLM MICROSOFT] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Microsoft\Input\TIPC" /v "Enabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Browser\AllowSmartScreen" /v "Value" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowCortana" /v "Value" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -465,7 +540,12 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "Ena
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "CortanaEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows\ScheduledDiagnostics" /v "EnabledExecution" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting" /v "Disabled" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [HKLM POLICIES] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" /v "NoActiveHelp" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" /v "NoExplicitFeedback" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Biometrics" /v "Enabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" /v "EnabledV9" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\PushToInstall" /v "DisablePushToInstall" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -492,8 +572,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableWindo
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "IncludeEnterpriseSpotlight" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CredUI" /v "DisablePasswordReveal" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" /v "NoTileApplicationNotification" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableNotificationCenter" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableSearchBoxSuggestions" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "HidePeopleBar" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "HideSCAMeetNow" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\FileHistory" /v "Disabled" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v "AllowGameDVR" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\HandwritingErrorReports" /v "PreventHandwritingErrorReports" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -525,6 +606,10 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Schedule
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 20 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\WMDRM" /v "DisableOnline" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [HKLM CONTROL] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v "VerifiedAndReputablePolicyState" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -535,10 +620,20 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "HibernateEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener" /v "Start" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Start" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [MAPS] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\Maps" /v "AutoUpdateEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+
+echo [ALLOWUPGRADESWITHUNSUPPORTEDTPMORCPU] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [EDGE STUFF] && cls
+echo [EDGE STUFF] 
+timeout /nobreak /t 1 >nul
+cls
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AlternateErrorPagesEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AutofillAddressEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "AutofillCreditCardEnabled" /t REG_DWORD /d 0 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -563,7 +658,9 @@ for /f "tokens=2 delims=:" %%T in ('schtasks /query /fo LIST /v ^| findstr /i "T
     schtasks /change /tn "!task!" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 )
 
-echo [SCHTASKS CANNOT DISABLE] && cls
+echo [SCHTASKS CANNOT DISABLE] 
+timeout /nobreak /t 1 >nul
+cls
 schtasks /change /tn "\Microsoft\Windows\Shell\UpdateUserPictureTask" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Report policies" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -575,7 +672,9 @@ schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UIEOrchestrator" /di
 schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UUS Failover Task" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [SCHTASKS] && cls
+echo [SCHTASKS] 
+timeout /nobreak /t 1 >nul
+cls
 schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Application Experience\PcaPatchDbTask" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Application Experience\StartupAppTask" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
@@ -632,11 +731,15 @@ schtasks /change /tn "\Microsoft\Windows\Windows Error Reporting\QueueReporting"
 schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [DELETES] && cls
+echo [DELETES] 
+timeout /nobreak /t 1 >nul
+cls
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate" /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 
-echo [AFTER UPDATES/REPAIRS RUN AGAIN, CHECK registry-tweaks-refresh.txt FORCE LOG ENTRIES IN A PROGRAM LIKE RegCool.exe] && cls
+echo [AFTER UPDATES/REPAIRS RUN AGAIN, CHECK registry-tweaks-refresh.txt FORCE LOG ENTRIES IN A PROGRAM LIKE RegCool.exe] 
+timeout /nobreak /t 1 >nul
+cls
 echo [AFTER UPDATES/REPAIRS RUN AGAIN, CHECK registry-tweaks-refresh.txt FORCE LOG ENTRIES IN A PROGRAM LIKE RegCool.exe] >> "%log%"
 echo [AFTER UPDATES/REPAIRS RUN AGAIN, CHECK registry-tweaks-refresh.txt FORCE LOG ENTRIES IN A PROGRAM LIKE RegCool.exe]
 echo [REBOOT AFTER] >> "%log%"
@@ -645,4 +748,5 @@ echo [REBOOT AFTER]
 powershell -c "(New-Object Media.SoundPlayer 'C:\Windows\Media\Ring05.wav').PlaySync()"
 endlocal
 pause >nul
+exit /b
 ```
