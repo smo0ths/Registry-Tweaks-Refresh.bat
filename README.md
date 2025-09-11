@@ -361,6 +361,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWO
 echo [DISABLING FUNCTION DISCOVERY FRAMEWORK (APPLE/SMART TV/ETC)] & timeout /nobreak /t 1 >nul & cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\fdPHost" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FDResPub" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "SUCCESS INFO" >> "%log%"
 
 echo [CACHING/INDEXING FOR SLOW DRIVES DISABLED] & timeout /nobreak /t 1 >nul & cls
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f 2>&1 | findstr /v /i "ERROR SUCCESS INFO" >> "%log%"
