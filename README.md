@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.5.0
+# Registry-Tweaks-Refresh.bat v0.5.1
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -148,8 +148,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsRunInBackground" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableNotificationCenter" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /t REG_DWORD /d 0 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 goto touchchoice
 
 :enableinterests
@@ -164,12 +162,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsRunInBackground" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "DisableNotificationCenter" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds" /t REG_DWORD /d 1 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config WpnService start= demand >nul 2>&1
-sc triggerinfo WpnService starttype=all >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config WpnUserService start= demand >nul 2>&1
-sc triggerinfo WpnUserService starttype=all >nul 2>&1
 goto touchchoice
 
 :touchchoice
@@ -252,11 +244,15 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTAGService" /v "Start" /t REG_D
 sc config BTAGService start= demand >nul 2>&1
 sc triggerinfo BTAGService starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthav" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
+sc config bthav start= demand >nul 2>&1
+sc triggerinfo bthav starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
+sc config BTHPORT start= demand >nul 2>&1
+sc triggerinfo BTHPORT starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthserv" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config bthserv start= demand >nul 2>&1
-sc triggerinfo bthserv starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHUSB" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
+sc config BTHUSB start= demand >nul 2>&1
+sc triggerinfo BTHUSB starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DeviceAssociationService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config DeviceAssociationService start= demand >nul 2>&1
 sc triggerinfo DeviceAssociationService starttype=all >nul 2>&1
@@ -531,9 +527,6 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\RmSvc" /v "Start" /t REG_DWORD /
 :: sc config RmSvc start= demand >nul 2>&1
 :: sc triggerinfo RmSvc starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StiSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config StorSvc start= demand >nul 2>&1
-:: sc triggerinfo StorSvc starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UevAgentService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config UevAgentService start= demand >nul 2>&1
 :: sc triggerinfo UevAgentService starttype=all >nul 2>&1
@@ -554,24 +547,22 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v "Start" /t REG
 :: sc triggerinfo XboxNetApiSvc starttype=all >nul 2>&1
 
 echo "VARIOUS SERVICES SET CORRECTLY"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 sc config BITS start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config ConsentUxUserSvc start= demand >nul 2>&1
 sc triggerinfo ConsentUxUserSvc starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 sc config CryptSvc start= delayed-auto >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config DispBrokerDesktopSvc start= demand >nul 2>&1
 sc triggerinfo DispBrokerDesktopSvc starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
-sc config DisplayEnhancementService start= demand >nul 2>&1
-sc triggerinfo DisplayEnhancementService starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 sc config Netman start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config netprofm start= demand >nul 2>&1
@@ -583,6 +574,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWOR
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RmSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config RmSvc start= demand >nul 2>&1
 sc triggerinfo RmSvc starttype=all >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
+sc config StorSvc start= demand >nul 2>&1
+sc triggerinfo StorSvc starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TextInputManagementService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config TextInputManagementService start= demand >nul 2>&1
 sc triggerinfo TextInputManagementService starttype=all >nul 2>&1
@@ -593,6 +587,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 sc config Winmgmt start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\xboxgip" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 
 echo "BITLOCKER OFF"
