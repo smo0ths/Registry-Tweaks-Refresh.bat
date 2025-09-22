@@ -131,7 +131,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSAIFabricSvc" /v "Start" /t REG
 goto interestschoice
 
 :interestschoice
-set /P interestschoice=Y DISABLES NEWS AND INTERESTS, N ENABLES/DEFAULTS [Y/N]:
+set /P interestschoice=Y DISABLES NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT, N ENABLES/DEFAULTS [Y/N]:
 if /I "%interestschoice%"=="Y" goto disableinterests
 if /I "%interestschoice%"=="N" goto enableinterests
 goto invalidchoice
@@ -581,6 +581,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks" /v "Start" /t REG_DWORD 
 :: echo "this is fine"
 sc config TrkWks start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v Type /t REG_SZ /d NoSync /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 sc config Winmgmt start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
