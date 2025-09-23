@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.5.1
+# Registry-Tweaks-Refresh.bat v0.5.2
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -20,6 +20,24 @@ if %hourInt% GEQ 12 set "ampm=PM"
 if %hourInt% GTR 12 set /a hourInt-=12
 if %hourInt%==0 set hourInt=12
 title %~nx0 - %date% %hourInt%:%min%:%sec% %ampm%
+
+:AUTOUpdatechoice
+set /P AUTOUpdatechoice=Y JUST STOP/DISABLE wuauserv(Windows Update)/UsoSvc(Update Orchestrator), N SKIPS [Y/N]:
+if /I "%AUTOUpdatechoice%"=="Y" goto yesAUTO
+if /I "%AUTOUpdatechoice%"=="N" goto noAUTO
+goto invalidchoice
+
+:yesAUTO
+echo "RE-DISABLING wuauserv(Windows Update)/UsoSvc(Update Orchestrator)"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
+net stop UsoSvc >nul 2>&1
+net stop wuauserv >nul 2>&1
+goto restorechoice
+
+:noAUTO
+echo "SKIPPING wuauserv(Windows Update)/UsoSvc(Update Orchestrator) stop/disable"
+goto restorechoice
 
 :restorechoice
 set /P restorechoice=Y OPENS SYSTEM PROPERTIES SO YOU CAN CREATE A RESTORE POINT, N SKIPS [Y/N]:
@@ -43,7 +61,7 @@ if /I "%updatechoice%"=="N" goto enableupdates
 goto invalidchoice
 
 :disableupdates
-echo "DISABLING WINDOWS UPDATES 1 MANUALLY"
+echo "DISABLING WINDOWS UPDATES (1 MANUALLY)"
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "ExcludeWUDrivers" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f >nul 2>&1
@@ -54,8 +72,6 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-echo "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 goto printerchoice
 
@@ -66,27 +82,18 @@ reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "Exc
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v "ExcludeWUDriversInQualityUpdate" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
-schtasks /change /tn "\Microsoft\Windows\AppID\VerifiedPublisherCertStoreCheck" /enable >nul 2>&1
 sc config AppIDSvc start= demand >nul 2>&1
-sc triggerinfo AppIDSvc starttype=all >nul 2>&1
+sc triggerinfo AppIDSvc starttype= all >nul 2>&1
+schtasks /change /tn "\Microsoft\Windows\AppID\VerifiedPublisherCertStoreCheck" /enable >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config DoSvc start= demand >nul 2>&1
-sc triggerinfo DoSvc starttype=all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
-sc config InstallService start= demand >nul 2>&1
-sc triggerinfo InstallService starttype=all >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config UsoSvc start= demand >nul 2>&1
-sc triggerinfo UsoSvc starttype=all >nul 2>&1
+sc triggerinfo UsoSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
-sc config WaaSMedicSvc start= demand >nul 2>&1
-sc triggerinfo WaaSMedicSvc starttype=all >nul 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config wscsvc start= demand >nul 2>&1
-sc triggerinfo wscsvc starttype=all >nul 2>&1
-echo "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc (set REG_DWORD 2)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
-sc config wuauserv start= delayed-auto >nul 2>&1
+sc config wuauserv start= demand >nul 2>&1
+sc triggerinfo wuauserv starttype= all >nul 2>&1
 goto printerchoice
 
 :printerchoice
@@ -107,9 +114,8 @@ echo "ENABLING PRINTER"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintDeviceConfigurationService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintWorkflowUserSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config PrintWorkflowUserSvc start= demand >nul 2>&1
-sc triggerinfo PrintWorkflowUserSvc starttype=all >nul 2>&1
+sc triggerinfo PrintWorkflowUserSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config Spooler start= delayed-auto >nul 2>&1
 goto copilotchoice
 
 :copilotchoice
@@ -137,7 +143,7 @@ if /I "%interestschoice%"=="N" goto enableinterests
 goto invalidchoice
 
 :disableinterests
-echo "DISABLE NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR 2 MANUALLY"
+echo "DISABLING NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR (2 MANUALLY)"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 0 /f >nul 2>&1
 echo "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced (set TaskbarDa REG_DWORD to 0)" >> "%log%"
@@ -151,7 +157,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds
 goto touchchoice
 
 :enableinterests
-echo "ENABLE NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR 1 MANUALLY"
+echo "ENABLING NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR (1 MANUALLY)"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 1 /f >nul 2>&1
 echo "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced (set TaskbarDa REG_DWORD to 1)" >> "%log%"
@@ -217,7 +223,7 @@ reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "4FingerTapAction" /t RE
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\TabletPC" /v "EnableTouch" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config PenService start= demand >nul 2>&1
-sc triggerinfo PenService starttype=all >nul 2>&1
+sc triggerinfo PenService starttype= all >nul 2>&1
 goto bluechoice
 
 :bluechoice
@@ -242,26 +248,26 @@ goto troublechoice
 echo "ENABLING BLUETOOTH"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTAGService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config BTAGService start= demand >nul 2>&1
-sc triggerinfo BTAGService starttype=all >nul 2>&1
+sc triggerinfo BTAGService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthav" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config bthav start= demand >nul 2>&1
-sc triggerinfo bthav starttype=all >nul 2>&1
+sc triggerinfo bthav starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config BTHPORT start= demand >nul 2>&1
-sc triggerinfo BTHPORT starttype=all >nul 2>&1
+sc triggerinfo BTHPORT starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthserv" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHUSB" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config BTHUSB start= demand >nul 2>&1
-sc triggerinfo BTHUSB starttype=all >nul 2>&1
+sc triggerinfo BTHUSB starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DeviceAssociationService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config DeviceAssociationService start= demand >nul 2>&1
-sc triggerinfo DeviceAssociationService starttype=all >nul 2>&1
+sc triggerinfo DeviceAssociationService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DevicePickerUserSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config DevicePickerUserSvc start= demand >nul 2>&1
-sc triggerinfo DevicePickerUserSvc starttype=all >nul 2>&1
+sc triggerinfo DevicePickerUserSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DevicesFlowUserSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config DevicesFlowUserSvc start= demand >nul 2>&1
-sc triggerinfo DevicesFlowUserSvc starttype=all >nul 2>&1
+sc triggerinfo DevicesFlowUserSvc starttype= all >nul 2>&1
 goto troublechoice
 
 :troublechoice
@@ -275,13 +281,12 @@ echo "DISABLING TROUBLESHOOTERS"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DiagTrack" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\dmwappushservice" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-sc config DPS start= delayed-auto >nul 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\DPS (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lfsvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost" (set REG_DWORD 4) >> "%log%"
+echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" (set REG_DWORD 4) >> "%log%"
+echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 goto endscript
 
@@ -290,19 +295,19 @@ echo "ENABLING TROUBLESHOOTERS"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DiagTrack" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\dmwappushservice" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config dmwappushservice start= demand >nul 2>&1
-sc triggerinfo dmwappushservice starttype=all >nul 2>&1
+sc triggerinfo dmwappushservice starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\DPS (set REG_DWORD 2)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lfsvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config lfsvc start= demand >nul 2>&1
-sc triggerinfo lfsvc starttype=all >nul 2>&1
+sc triggerinfo lfsvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost (set REG_DWORD 3)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 3)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config WerSvc start= demand >nul 2>&1
-sc triggerinfo WerSvc starttype=all >nul 2>&1
+sc triggerinfo WerSvc starttype= all >nul 2>&1
 goto endscript
 
 :invalidchoice
@@ -364,29 +369,28 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{C04D7B5C-9C2F-4C32-9C47-5C6E2F0E6D98}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SensorDataService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config SensorDataService start= demand >nul 2>&1
-:: sc triggerinfo SensorDataService starttype=all >nul 2>&1
+:: sc triggerinfo SensorDataService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SensorService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config SensorService start= demand >nul 2>&1
-sc triggerinfo SensorService starttype=all >nul 2>&1
+sc triggerinfo SensorService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SensrSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config SensrSvc start= demand >nul 2>&1
-:: sc triggerinfo SensrSvc starttype=all >nul 2>&1
+:: sc triggerinfo SensrSvc starttype= all >nul 2>&1
 
 echo "SMB STUFF"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config LanmanServer start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "AutoShareWks" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 
-echo "MSEC DO MANUALLY"
+echo "DISABLING MSEC (3 MANUALLY)"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >nul 2>&1
-echo "HKLM\SOFTWARE\Microsoft\Windows Defender (add/set REG_DWORD DisableAntiSpyware 1)" >> "%log%"
+echo "HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1 ~ turn off in Windows Security app)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >nul 2>&1
-echo "HKLM\SOFTWARE\Microsoft\Windows Defender (add/set REG_DWORD DisableAntiVirus 1)"  >> "%log%"
+echo "HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1 ~ turn off in Windows Security app)"  >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 4)" >> "%log%"
 
-echo "MSEC"
+echo "DISABLING MSEC"
 reg add "HKLM\SOFTWARE\Microsoft\RemovalTools\MpGears" /v "HeartbeatTrackingIndex" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MRT" /v "DontOfferThroughWUAU" /t REG_DWORD /d 1 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MRT" /v "DontReportInfectionInformation" /t REG_DWORD /d 1 /f >nul 2>&1
@@ -411,10 +415,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "PublishUserActivit
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "UploadUserActivities" /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Sense" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config Sense start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config WbioSrvc start= demand >nul 2>&1
-:: sc triggerinfo WbioSrvc starttype=all >nul 2>&1
+:: sc triggerinfo WbioSrvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
@@ -422,23 +425,17 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWOR
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config webthreatdefusersvc start= demand >nul 2>&1
-:: sc triggerinfo webthreatdefusersvc starttype=all >nul 2>&1
+:: sc triggerinfo webthreatdefusersvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config WinDefend start= delayed-auto >nul 2>&1
-
 echo "DISABLING FUNCTION DISCOVERY FRAMEWORK (APPLE/SMART TV/ETC)"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\fdPHost" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FDResPub" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config FDResPub start= demand >nul 2>&1
-:: sc triggerinfo FDResPub starttype=all >nul 2>&1
+:: sc triggerinfo FDResPub starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config SSDPSRV start= delayed-auto >nul 2>&1
-
 echo "CACHING/INDEXING FOR SLOW DRIVES DISABLED"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config SysMain start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config WSearch start= delayed-auto >nul 2>&1
 
 echo "CORE IPV6 IPHLPSVC DISABLED"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
@@ -446,153 +443,148 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWOR
 echo "UNIVERSAL WINDOWS PLATFORM(UWP/APP MODEL)/STORE/BACKEND/FRAMEWORK"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppReadiness" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config AppReadiness start= demand >nul 2>&1
-sc triggerinfo AppReadiness starttype=all >nul 2>&1
+sc triggerinfo AppReadiness starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppXSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config AppXSvc start= demand >nul 2>&1
-sc triggerinfo AppXSvc starttype=all >nul 2>&1
+sc triggerinfo AppXSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\camsvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config camsvc start= demand >nul 2>&1
-sc triggerinfo camsvc starttype=all >nul 2>&1
+sc triggerinfo camsvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CDPUserSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config CDPUserSvc start= demand >nul 2>&1
-sc triggerinfo CDPUserSvc starttype=all >nul 2>&1
+sc triggerinfo CDPUserSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ClipSVC" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config ClipSVC start= demand >nul 2>&1
-sc triggerinfo ClipSVC starttype=all >nul 2>&1
+sc triggerinfo ClipSVC starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcbService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config NcbService start= demand >nul 2>&1
-sc triggerinfo NcbService starttype=all >nul 2>&1
+sc triggerinfo NcbService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\OneSyncSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config OneSyncSvc start= demand >nul 2>&1
-sc triggerinfo OneSyncSvc starttype=all >nul 2>&1
+sc triggerinfo OneSyncSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StateRepository" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config StateRepository start= demand >nul 2>&1
-sc triggerinfo StateRepository starttype=all >nul 2>&1
+sc triggerinfo StateRepository starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TimeBrokerSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config TimeBrokerSvc start= demand >nul 2>&1
-sc triggerinfo TimeBrokerSvc starttype=all >nul 2>&1
+sc triggerinfo TimeBrokerSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TokenBroker" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config TokenBroker start= demand >nul 2>&1
-sc triggerinfo TokenBroker starttype=all >nul 2>&1
+sc triggerinfo TokenBroker starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 :: echo "this is fine"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UdkUserSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config UdkUserSvc start= demand >nul 2>&1
-sc triggerinfo UdkUserSvc starttype=all >nul 2>&1
+sc triggerinfo UdkUserSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UnistoreSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config UnistoreSvc start= demand >nul 2>&1
-sc triggerinfo UnistoreSvc starttype=all >nul 2>&1
+sc triggerinfo UnistoreSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UserDataSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config UserDataSvc start= demand >nul 2>&1
-sc triggerinfo UserDataSvc starttype=all >nul 2>&1
+sc triggerinfo UserDataSvc starttype= all >nul 2>&1
 
 echo "VARIOUS DISABLED SERVICES"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BcastDVRUserService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config BcastDVRUserService start= demand >nul 2>&1
-:: sc triggerinfo BcastDVRUserService starttype=all >nul 2>&1
+:: sc triggerinfo BcastDVRUserService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CaptureService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config CaptureService start= demand >nul 2>&1
-:: sc triggerinfo CaptureService starttype=all >nul 2>&1
+:: sc triggerinfo CaptureService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\cbdhsvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config cbdhsvc start= demand >nul 2>&1
-:: sc triggerinfo cbdhsvc starttype=all >nul 2>&1
+:: sc triggerinfo cbdhsvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DusmSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config DusmSvc start= demand >nul 2>&1
-:: sc triggerinfo DusmSvc starttype=all >nul 2>&1
+:: sc triggerinfo DusmSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FrameServer" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config FrameServer start= demand >nul 2>&1
-:: sc triggerinfo FrameServer starttype=all >nul 2>&1
+:: sc triggerinfo FrameServer starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FrameServerMonitor" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\jhi_service" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MessagingService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config MessagingService start= demand >nul 2>&1
-:: sc triggerinfo MessagingService starttype=all >nul 2>&1
+:: sc triggerinfo MessagingService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Ndu" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\P9RdrService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PhoneSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config PhoneSvc start= demand >nul 2>&1
-:: sc triggerinfo PhoneSvc starttype=all >nul 2>&1
+:: sc triggerinfo PhoneSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PimIndexMaintenanceSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config PimIndexMaintenanceSvc start= demand >nul 2>&1
-:: sc triggerinfo PimIndexMaintenanceSvc starttype=all >nul 2>&1
+:: sc triggerinfo PimIndexMaintenanceSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\QWAVE" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config QWAVE start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteRegistry" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RetailDemo" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
-:: sc config RetailDemo start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StiSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UevAgentService" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config UevAgentService start= demand >nul 2>&1
-:: sc triggerinfo UevAgentService starttype=all >nul 2>&1
+:: sc triggerinfo UevAgentService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WManSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config XblAuthManager start= demand >nul 2>&1
-:: sc triggerinfo XblAuthManager starttype=all >nul 2>&1
+:: sc triggerinfo XblAuthManager starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblGameSave" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config XblGameSave start= demand >nul 2>&1
-:: sc triggerinfo XblGameSave starttype=all >nul 2>&1
+:: sc triggerinfo XblGameSave starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxGipSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config XboxGipSvc start= demand >nul 2>&1
-:: sc triggerinfo XboxGipSvc starttype=all >nul 2>&1
+:: sc triggerinfo XboxGipSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config XboxNetApiSvc start= demand >nul 2>&1
-:: sc triggerinfo XboxNetApiSvc starttype=all >nul 2>&1
+:: sc triggerinfo XboxNetApiSvc starttype= all >nul 2>&1
 
 echo "VARIOUS SERVICES SET CORRECTLY"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config BITS start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config ConsentUxUserSvc start= demand >nul 2>&1
-sc triggerinfo ConsentUxUserSvc starttype=all >nul 2>&1
+sc triggerinfo ConsentUxUserSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config CryptSvc start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config DispBrokerDesktopSvc start= demand >nul 2>&1
-sc triggerinfo DispBrokerDesktopSvc starttype=all >nul 2>&1
+sc triggerinfo DispBrokerDesktopSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config Netman start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config netprofm start= demand >nul 2>&1
-sc triggerinfo netprofm starttype=all >nul 2>&1
+sc triggerinfo netprofm starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config PcaSvc start= demand >nul 2>&1
-sc triggerinfo PcaSvc starttype=all >nul 2>&1
+sc triggerinfo PcaSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RmSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config RmSvc start= demand >nul 2>&1
-sc triggerinfo RmSvc starttype=all >nul 2>&1
+sc triggerinfo RmSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config StorSvc start= demand >nul 2>&1
-sc triggerinfo StorSvc starttype=all >nul 2>&1
+sc triggerinfo StorSvc starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TextInputManagementService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 sc config TextInputManagementService start= demand >nul 2>&1
-sc triggerinfo TextInputManagementService starttype=all >nul 2>&1
+sc triggerinfo TextInputManagementService starttype= all >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 :: echo "this is fine"
-sc config TrkWks start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v Type /t REG_SZ /d NoSync /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
-sc config Winmgmt start= delayed-auto >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 2 /f >nul 2>&1
+echo "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc (set REG_DWORD 2) (should be default)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\xboxgip" /v "Start" /t REG_DWORD /d 3 /f >nul 2>&1
 
 echo "BITLOCKER OFF"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BDESVC" /v "Start" /t REG_DWORD /d 4 /f >nul 2>&1
 :: sc config BDESVC start= demand >nul 2>&1
-:: sc triggerinfo BDESVC starttype=all >nul 2>&1
+:: sc triggerinfo BDESVC starttype= all >nul 2>&1
 
 echo "DISABLES OTHER WINDOWS AI STUFF"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsAADCloudSearchEnabled" /t REG_DWORD /d 0 /f >nul 2>&1
@@ -932,8 +924,6 @@ echo "check log on desktop and CHANGE VALUES* in RegCool.exe(or other) manually"
 echo "check log on desktop and CHANGE VALUES* in RegCool.exe(or other) manually"
 echo "Turn off everything in windows virus & threat protection or revert MSEC sections if you want that stuff" >> "%log%"
 echo "Turn off everything in windows virus & threat protection or revert MSEC sections if you want that stuff"
-echo "Stop UsoSvc/wuauserv (Orchest/Win Upd) after reboots because of schtasks" >> "%log%"
-echo "Stop UsoSvc/wuauserv (Orchest/Win Upd) after reboots because of schtasks"
 echo "REBOOT AFTER" >> "%log%"
 echo "REBOOT AFTER"
 
