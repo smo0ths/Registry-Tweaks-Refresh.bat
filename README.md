@@ -420,9 +420,11 @@ echo "DISABLING MSEC (3 MANUALLY)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
 echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1 ~ turn off in Windows Security app)" >> "%log%"
+
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
 echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1 ~ turn off in Windows Security app)" >> "%log%"
+
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 4)" >> "%log%"
