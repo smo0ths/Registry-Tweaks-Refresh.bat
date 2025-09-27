@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.5.7
+# Registry-Tweaks-Refresh.bat v0.5.8
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -168,7 +168,7 @@ if /I "%interestschoice%"=="N" goto enableinterests
 goto invalidchoice
 
 :disableinterests
-echo "DISABLING NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR (2 MANUALLY)" >> "%log%"
+echo "DISABLING NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 echo "CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced (set TaskbarDa REG_DWORD to 0)" >> "%log%"
@@ -182,7 +182,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds
 goto touchchoice
 
 :enableinterests
-echo "ENABLING NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR (1 MANUALLY)" >> "%log%"
+echo "ENABLING NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 echo "CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced (set TaskbarDa REG_DWORD to 1)" >> "%log%"
@@ -395,16 +395,12 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer" /v "Start" /t REG_
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "AutoShareWks" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 
-echo "DISABLING MSEC (3 MANUALLY)" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1 ~ turn off in Windows Security app)" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1 ~ turn off in Windows Security app)" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 4)" >> "%log%"
-
 echo "DISABLING MSEC" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\RemovalTools\MpGears" /v "HeartbeatTrackingIndex" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MRT" /v "DontOfferThroughWUAU" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MRT" /v "DontReportInfectionInformation" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "AllowFastServiceStartup" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -427,17 +423,30 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "EnableSmartScreenF
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "PublishUserActivities" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "UploadUserActivities" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo SecurityHealthService starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Sense" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo Sense starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo WbioSrvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo WdNisSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo webthreatdefsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo webthreatdefusersvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo WinDefend starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 
 echo "DISABLING FUNCTION DISCOVERY FRAMEWORK (APPLE/SMART TV/ETC)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\fdPHost" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
