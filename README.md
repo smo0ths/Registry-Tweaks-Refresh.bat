@@ -1,7 +1,8 @@
-# Registry-Tweaks-Refresh.bat v0.5.9
+# Registry-Tweaks-Refresh.bat v0.6.0
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
+#### %ProgramData%\Microsoft\Windows\Start Menu\Programs\Startup (throw .bat into here so you can turn off just windows updates when they pop up randomly every boot)
 #### use Autoruns64.exe to find out more about your PC's autoruns
 
 ```python
@@ -642,13 +643,13 @@ reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d 0 /f 
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_HonorUserFSEBehaviorMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
 echo "PERSONALIZATION/EXPLORER/CONTROL PANEL TWEAKS/THEMES" >> "%log%"
-reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "DragFullWindows" /t REG_SZ /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "DragHeight" /t REG_SZ /d 2 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "DragWidth" /t REG_SZ /d 2 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_DWORD /d 200 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "SmoothScroll" /t REG_SZ /d 1 /f >>"%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "WaitToKillAppTimeout" /t REG_SZ /d 3000 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "WaitToKillAppTimeout" /t REG_SZ /d 20000 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v "MinAnimate" /t REG_SZ /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_DWORD /d 500 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /ve /t REG_SZ /d "" /f >>"%log%" 2>&1
