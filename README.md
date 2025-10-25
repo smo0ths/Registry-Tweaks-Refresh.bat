@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.6.2
+# Registry-Tweaks-Refresh.bat v0.6.3
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -220,6 +220,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PrecisionTouchPad" /v "E
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\TabletPC" /v "TurnOffTouchInput" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "3FingerTapAction" /t REG_DWORD /d 0x0000000 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "4FingerTapAction" /t REG_DWORD /d 0x0000000 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "ConvertibleSlateMode" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\TabletPC" /v "EnableTouch" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 goto bluechoice
@@ -244,6 +245,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PrecisionTouchPad" /v "E
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\TabletPC" /v "TurnOffTouchInput" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "3FingerTapAction" /t REG_DWORD /d 0x00000a6 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Synaptics\SynTPPlugins\SynTP" /v "4FingerTapAction" /t REG_DWORD /d 0x30115b27 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "ConvertibleSlateMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\TabletPC" /v "EnableTouch" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PenService" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo PenService starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
@@ -304,7 +306,7 @@ echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost (set REG_DWO
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-goto RTR
+goto PowerThrottlingchoice
 
 :yestrouble
 echo "ENABLING TROUBLESHOOTERS" >> "%log%"
@@ -321,6 +323,22 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 3)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo WerSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+goto PowerThrottlingchoice
+
+:PowerThrottlingchoice
+set /P PowerThrottlingchoice=Y DISABLES POWER THROTTLING, N ENABLES/DEFAULTS (laptops ect.) [Y/N]:
+if /I "%PowerThrottlingchoice%"=="Y" goto noPowerThrottling
+if /I "%PowerThrottlingchoice%"=="N" goto yesPowerThrottling
+goto invalidchoice
+
+:noPowerThrottling
+echo "DISABLING POWER THROTTLING" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+goto RTR
+
+:yesPowerThrottling
+echo "ENABLING POWER THROTTLING" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 goto RTR
 
 :invalidchoice
@@ -342,11 +360,25 @@ for %%A in (. . .) do (
 )
 echo.
 
-echo "ENHANCED FULLSCREEN EXCLUSIVE/FULLSCREEN EXCLUSIVE ENABLED" >> "%log%"
-reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+echo "BOOSTS GAMING PERFORMANCE" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Affinity" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Background Only" /t REG_SZ /d "False" /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 10000 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Priority" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "SFIO Priority" /t REG_SZ /d "Low" /f >>"%log%" 2>&1
 
-:: echo "ENHANCED FULLSCREEN EXCLUSIVE/FULLSCREEN EXCLUSIVE DISABLED" >> "%log%"
+echo "ENHANCED FULLSCREEN EXCLUSIVE/FULLSCREEN EXCLUSIVE" >> "%log%"
+echo "EFSE/FSO Lowest input latency" >> "%log%"
+reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+
+:: echo "EFSE/FSO default" >> "%log%"
+:: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+:: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+
+:: echo "EFSE/FSO Troubleshooting stutter or overlay issues" >> "%log%"
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 
@@ -622,9 +654,12 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization" /v "NoLockScr
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "AllowClipboardHistory" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "AllowCrossDeviceClipboard" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
+echo "NO QUANTUM BOOST/PRIO BOOST=2(DEFAULT) QUANTUM BOOST/PRIO=26 HIGH QUANTUM BOOST/PRIO BOOST=38" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
+
 echo "GAME TWEAKS" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AllowAutoGameMode" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AutoGameModeEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AllowAutoGameMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AutoGameModeEnabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "GamePanelStartupTipIndex" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "ShowStartupPanel" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "UseNexusForGameBarEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -800,13 +835,17 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Schedule
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\WMDRM" /v "DisableOnline" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
+echo "HIBERNATE DISABLED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "HibernateEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+
+echo "CLEAR VIRTUAL MEMORY FOR SECURITY(slows down shutdown time)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "ClearPageFileAtShutdown" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+
 echo "HKLM CONTROL" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v "VerifiedAndReputablePolicyState" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "IRQ8Priority" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "ClearPageFileAtShutdown" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "HibernateEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "IRQ8Priority" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener" /v "Start" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Start" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
