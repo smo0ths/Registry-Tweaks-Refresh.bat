@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.6.6
+# Registry-Tweaks-Refresh.bat v0.6.8
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -358,7 +358,7 @@ for %%A in (. . .) do (
 echo.
 
 echo "boosts/quantum default is balance/safer=26 (2:1/short) even/responsive/smooth=2 (1:1/short) game only/least background=38 (3:1/short)" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 26 /f >>"%log%" 2>&1
 
 echo "BOOSTS GAMING PERFORMANCE" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Affinity" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -454,8 +454,14 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteRegistry" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
+echo "LIMITED USER ACCOUNT FILE VIRTUALIZATION DISABLED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\luafv" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo luafv starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+
 echo "IPV6 STUFF" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcaSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo NcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 255 /f >>"%log%" 2>&1
 
 echo "UNIVERSAL WINDOWS PLATFORM(UWP/APP MODEL)/STORE/BACKEND/FRAMEWORK" >> "%log%"
@@ -959,17 +965,15 @@ echo "ALL NETWORK TWEAKS START" >> "%log%"
 :: netsh winsock reset
 :: netsh int tcp reset
 
+:: secure, intended behavior (to not be set to 1)
+reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v "DoNotUseNLA" /f >>"%log%" 2>&1
+echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
+
 :: defaults
 netsh int tcp set supplemental internet congestionprovider=default >>"%log%" 2>&1
 netsh interface ipv4 set subinterface "Ethernet" mtu=1500 store=persistent >>"%log%" 2>&1
 netsh interface ipv6 set subinterface "Ethernet" mtu=1500 store=persistent >>"%log%" 2>&1
 echo "this is fine (Element not found.)" >> "%log%"
-
-:: -ReceiveSegmentCoalescing disabled ✅ Can lower latency jitter ⚠️ May reduce throughput on heavy transfers
-powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing disabled" >>"%log%" 2>&1
-
-:: -ReceiveSegmentCoalescing default
-:: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled" >>"%log%" 2>&1
 
 :: defaults
 powershell -NoProfile -Command "Enable-NetAdapterChecksumOffload -Name * -ErrorAction SilentlyContinue" >>"%log%" 2>&1
@@ -985,17 +989,7 @@ powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -NonSack
 powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -ScalingHeuristics enabled" >>"%log%" 2>&1
 powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -Timestamps enabled" >>"%log%" 2>&1
 
-:: various network tweaks
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 10 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 30 /f >>"%log%" 2>&1
-
-:: various network tweaks defaults
-:: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
-:: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 120 /f >>"%log%" 2>&1
-
-:: set defaults
+:: defaults
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "explorer.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "iexplore.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPERSERVER" /v "explorer.exe" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
@@ -1005,66 +999,79 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "Size" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "DefaultTTL" /t REG_DWORD /d 128 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "MaxUserPort" /t REG_DWORD /d 5000 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "Tcp1323Opts" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "DnsPriority" /t REG_DWORD /d 2000 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "HostsPriority" /t REG_DWORD /d 500 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "LocalPriority" /t REG_DWORD /d 499 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "NetbtPriority" /t REG_DWORD /d 2001 /f >>"%log%" 2>&1
 
-:: secure, intended behavior (to not be set to 1)
-reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v "DoNotUseNLA" /f >>"%log%" 2>&1
-echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
+:: -ReceiveSegmentCoalescing disabled ✅ Can lower latency jitter ⚠️ May reduce throughput on heavy transfers
+:: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing disabled" >>"%log%" 2>&1
+
+:: -ReceiveSegmentCoalescing default
+powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled" >>"%log%" 2>&1
+
+:: various network tweaks
+:: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 10 /f >>"%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 30 /f >>"%log%" 2>&1
+
+:: various network tweaks defaults
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 120 /f >>"%log%" 2>&1
 
 :: for Message Queuing (MSMQ) (optional feature) (Enable-WindowsOptionalFeature -Online -FeatureName MSMQ-Server -All)
 :: reg add "HKLM\SOFTWARE\Microsoft\MSMQ\Parameters" /v "TCPNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
-echo "TCPIP TWEAKS" >> "%log%"
+:: echo "TCPIP TWEAKS" >> "%log%"
 :: WMIC‑based loop will be removed in 25H2 this script wont work do it manually or write it for powershell
 :: TcpAckFrequency=1 ✅ Lowers latency in some games.                       ⚠️ Adds overhead and can reduce throughput.
 :: TcpNoDelay=1      ✅ Improves responsiveness for latency-sensitive apps. ⚠️ Wastes bandwidth with many small packets.
-for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
-    set "guid=%%G"
-    call :applytweaks
-)
-goto :continue
-:applytweaks
-setlocal
-set "guid=%guid: =%"
-if not defined guid (
-    endlocal
-    goto :TT
-)
-set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%guid%"
-reg add "%regpath%" /v "TcpAckFrequency" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "%regpath%" /v "TcpNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg delete "%regpath%" /v "DisableTaskOffload" /f >>"%log%" 2>&1
-reg delete "%regpath%" /v "Tcp1323Opts" /f >>"%log%" 2>&1
-reg delete "%regpath%" /v "TcpDelAckTicks" /f >>"%log%" 2>&1
-endlocal
-goto :TT
-:TT
-
-:: echo "TCPIP TWEAKS DEFAULT" >> "%log%"
 :: for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
 ::     set "guid=%%G"
-::     call :resettweaks
+::     call :applytweaks
 :: )
 :: goto :continue
-:: :resettweaks
+:: :applytweaks
 :: setlocal
 :: set "guid=%guid: =%"
 :: if not defined guid (
 ::     endlocal
-::     goto :TTD
+::     goto :TT
 :: )
 :: set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%guid%"
+:: reg add "%regpath%" /v "TcpAckFrequency" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+:: reg add "%regpath%" /v "TcpNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 :: reg delete "%regpath%" /v "DisableTaskOffload" /f >>"%log%" 2>&1
 :: reg delete "%regpath%" /v "Tcp1323Opts" /f >>"%log%" 2>&1
-:: reg delete "%regpath%" /v "TcpAckFrequency" /f >>"%log%" 2>&1
 :: reg delete "%regpath%" /v "TcpDelAckTicks" /f >>"%log%" 2>&1
-:: reg delete "%regpath%" /v "TcpNoDelay" /f >>"%log%" 2>&1
 :: endlocal
-:: goto :TTD
-:: :TTD
+:: goto :TT
+:: :TT
+
+echo "TCPIP TWEAKS DEFAULT" >> "%log%"
+for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
+    set "guid=%%G"
+    call :resettweaks
+)
+goto :continue
+:resettweaks
+setlocal
+set "guid=%guid: =%"
+if not defined guid (
+    endlocal
+    goto :TTD
+)
+set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%guid%"
+reg delete "%regpath%" /v "DisableTaskOffload" /f >>"%log%" 2>&1
+reg delete "%regpath%" /v "Tcp1323Opts" /f >>"%log%" 2>&1
+reg delete "%regpath%" /v "TcpAckFrequency" /f >>"%log%" 2>&1
+reg delete "%regpath%" /v "TcpDelAckTicks" /f >>"%log%" 2>&1
+reg delete "%regpath%" /v "TcpNoDelay" /f >>"%log%" 2>&1
+endlocal
+goto :TTD
+:TTD
 
 echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
