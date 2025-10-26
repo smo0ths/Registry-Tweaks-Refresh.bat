@@ -702,8 +702,8 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "A
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "DisableThumbnailCache" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "DontPrettyPath" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "EnableBalloonTips" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "EnableToolTips" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ExtendedUIHoverTime" /t REG_DWORD /d 5000 /f >>"%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "EnableToolTips" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ExtendedUIHoverTime" /t REG_DWORD /d 5000 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "IconsOnly" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -956,8 +956,7 @@ for /f "tokens=*" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Active Setup\Insta
     )
 )
 
-echo "ALL NETWORK TWEAKS START" >> "%log%"
-
+echo "NETWORK TWEAKS" >> "%log%"
 :: reset (will wipe out all custom TCP/IP tweaks and restore the networking stack to its original state)
 :: netsh int ip reset
 :: netsh winsock reset
@@ -967,13 +966,14 @@ echo "ALL NETWORK TWEAKS START" >> "%log%"
 reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v "DoNotUseNLA" /f >>"%log%" 2>&1
 echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
+:: for Message Queuing (MSMQ) (optional feature) (Enable-WindowsOptionalFeature -Online -FeatureName MSMQ-Server -All)
+:: reg add "HKLM\SOFTWARE\Microsoft\MSMQ\Parameters" /v "TCPNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+
 :: defaults
 netsh int tcp set supplemental internet congestionprovider=default >>"%log%" 2>&1
 netsh interface ipv4 set subinterface "Ethernet" mtu=1500 store=persistent >>"%log%" 2>&1
 netsh interface ipv6 set subinterface "Ethernet" mtu=1500 store=persistent >>"%log%" 2>&1
 echo "this is fine (Element not found.)" >> "%log%"
-
-:: defaults
 powershell -NoProfile -Command "Enable-NetAdapterChecksumOffload -Name * -ErrorAction SilentlyContinue" >>"%log%" 2>&1
 powershell -NoProfile -Command "Enable-NetAdapterLso -Name * -ErrorAction SilentlyContinue" >>"%log%" 2>&1
 powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -Chimney disabled" >>"%log%" 2>&1
@@ -986,8 +986,6 @@ powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -MinRto 
 powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -NonSackRttResiliency enabled" >>"%log%" 2>&1
 powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -ScalingHeuristics enabled" >>"%log%" 2>&1
 powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -Timestamps enabled" >>"%log%" 2>&1
-
-:: defaults
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "explorer.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "iexplore.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPERSERVER" /v "explorer.exe" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
@@ -1019,12 +1017,9 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProf
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 120 /f >>"%log%" 2>&1
 
-:: for Message Queuing (MSMQ) (optional feature) (Enable-WindowsOptionalFeature -Online -FeatureName MSMQ-Server -All)
-:: reg add "HKLM\SOFTWARE\Microsoft\MSMQ\Parameters" /v "TCPNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-
 :: echo "TCPIP TWEAKS" >> "%log%"
 :: WMIC‑based loop will be removed in 25H2 this script wont work do it manually or write it for powershell
-:: TcpAckFrequency=1 ✅ Lowers latency in some games.                       ⚠️ Adds overhead and can reduce throughput.
+:: TcpAckFrequency=1 ✅ Lowers latency in some games. ⚠️ Adds overhead and can reduce throughput.
 :: TcpNoDelay=1      ✅ Improves responsiveness for latency-sensitive apps. ⚠️ Wastes bandwidth with many small packets.
 :: for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
 ::     set "guid=%%G"
@@ -1047,6 +1042,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWa
 :: endlocal
 :: goto :TT
 :: :TT
+:: echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
 echo "TCPIP TWEAKS DEFAULT" >> "%log%"
 for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
@@ -1070,22 +1066,7 @@ reg delete "%regpath%" /v "TcpNoDelay" /f >>"%log%" 2>&1
 endlocal
 goto :TTD
 :TTD
-
 echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
-
-echo "END OF ALL NETWORK TWEAKS" >> "%log%"
-
-:: echo "SCHTASKS CANNOT DISABLE" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Shell\UpdateUserPictureTask" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Report policies" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Start Oobe Expedite Work" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScan_LicenseAccepted" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScanAfterUpdate" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UIEOrchestrator" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UUS Failover Task" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
 echo "SCHTASKS" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
@@ -1138,6 +1119,18 @@ schtasks /change /tn "\Microsoft\Windows\Windows Reporting\QueueReporting" /disa
 schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 echo "this is fine (ERROR: The specified task name "" does not exist in the system.)" >> "%log%"
+
+:: echo "SCHTASKS CANNOT DISABLE" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\Shell\UpdateUserPictureTask" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Report policies" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Start Oobe Expedite Work" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScan_LicenseAccepted" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScanAfterUpdate" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UIEOrchestrator" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UUS Failover Task" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
 echo "UPDATE DELETES" >> "%log%"
 reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\ClipchampUpdate" /f >>"%log%" 2>&1
