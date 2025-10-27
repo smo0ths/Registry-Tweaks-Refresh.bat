@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.6.9
+# Registry-Tweaks-Refresh.bat v0.7.0
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
