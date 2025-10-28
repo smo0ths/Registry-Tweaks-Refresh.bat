@@ -1017,72 +1017,72 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "Hosts
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "LocalPriority" /t REG_DWORD /d 499 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "NetbtPriority" /t REG_DWORD /d 2001 /f >>"%log%" 2>&1
 
-:: echo "-RECEIVESEGMENTCOALESCING DISABLED ✅ CAN LOWER LATENCY JITTER ⚠️ MAY REDUCE THROUGHPUT ON HEAVY TRANSFERS" >> "%log%"
-:: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing disabled" >>"%log%" 2>&1
+echo "-RECEIVESEGMENTCOALESCING DISABLED ✅ CAN LOWER LATENCY JITTER ⚠️ MAY REDUCE THROUGHPUT ON HEAVY TRANSFERS" >> "%log%"
+powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing disabled" >>"%log%" 2>&1
 
-echo "-RECEIVESEGMENTCOALESCING DEFAULT" >> "%log%"
-powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled" >>"%log%" 2>&1
+:: echo "-RECEIVESEGMENTCOALESCING DEFAULT" >> "%log%"
+:: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled" >>"%log%" 2>&1
 
-:: echo "VARIOUS NETWORK TWEAKS" >> "%log%"
-:: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 10 /f >>"%log%" 2>&1
-:: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 30 /f >>"%log%" 2>&1
+echo "VARIOUS NETWORK TWEAKS" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 10 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 30 /f >>"%log%" 2>&1
 
 :: echo "VARIOUS NETWORK TWEAKS DEFAULTS" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 120 /f >>"%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 120 /f >>"%log%" 2>&1
 
-:: echo "TCPIP TWEAKS" >> "%log%"
-:: WMIC‑based loop will be removed in 25H2 this script wont work do it manually or write it for powershell
-:: TcpAckFrequency=1 ✅ Lowers latency in some games. ⚠️ Adds overhead and can reduce throughput.
-:: TcpNoDelay=1      ✅ Improves responsiveness for latency-sensitive apps. ⚠️ Wastes bandwidth with many small packets.
-:: for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
-::     set "guid=%%G"
-::     call :applytweaks
-:: )
-:: goto :continue
-:: :applytweaks
-:: setlocal
-:: set "guid=%guid: =%"
-:: if not defined guid (
-::     endlocal
-::     goto :TT
-:: )
-:: set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%guid%"
-:: reg add "%regpath%" /v "TcpAckFrequency" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-:: reg add "%regpath%" /v "TcpNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-:: reg delete "%regpath%" /v "DisableTaskOffload" /f >>"%log%" 2>&1
-:: reg delete "%regpath%" /v "Tcp1323Opts" /f >>"%log%" 2>&1
-:: reg delete "%regpath%" /v "TcpDelAckTicks" /f >>"%log%" 2>&1
-:: endlocal
-:: goto :TT
-:: :TT
-:: echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
-
-echo "TCPIP TWEAKS DEFAULT" >> "%log%"
+echo "TCPIP TWEAKS" >> "%log%"
+echo "WMIC‑BASED LOOP WILL BE REMOVED IN 25H2 THIS SCRIPT WONT WORK DO IT MANUALLY OR WRITE IT DIFFERENTLY" >> "%log%"
+echo "TCPACKFREQUENCY=1 ✅ LOWERS LATENCY IN SOME GAMES. ⚠️ ADDS OVERHEAD AND CAN REDUCE THROUGHPUT." >> "%log%"
+echo "TCPNODELAY=1 ✅ IMPROVES RESPONSIVENESS FOR LATENCY-SENSITIVE APPS. ⚠️ WASTES BANDWIDTH WITH MANY SMALL PACKETS." >> "%log%"
 for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
     set "guid=%%G"
-    call :resettweaks
+    call :applytweaks
 )
 goto :continue
-:resettweaks
+:applytweaks
 setlocal
 set "guid=%guid: =%"
 if not defined guid (
     endlocal
-    goto :TTD
+    goto :TT
 )
 set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%guid%"
+reg add "%regpath%" /v "TcpAckFrequency" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+reg add "%regpath%" /v "TcpNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg delete "%regpath%" /v "DisableTaskOffload" /f >>"%log%" 2>&1
 reg delete "%regpath%" /v "Tcp1323Opts" /f >>"%log%" 2>&1
-reg delete "%regpath%" /v "TcpAckFrequency" /f >>"%log%" 2>&1
 reg delete "%regpath%" /v "TcpDelAckTicks" /f >>"%log%" 2>&1
-reg delete "%regpath%" /v "TcpNoDelay" /f >>"%log%" 2>&1
 endlocal
-goto :TTD
-:TTD
+goto :TT
+:TT
 echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
+
+:: echo "TCPIP TWEAKS DEFAULT" >> "%log%"
+:: for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
+::     set "guid=%%G"
+::     call :resettweaks
+:: )
+:: goto :continue
+:: :resettweaks
+:: setlocal
+:: set "guid=%guid: =%"
+:: if not defined guid (
+::     endlocal
+::     goto :TTD
+:: )
+:: set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%guid%"
+:: reg delete "%regpath%" /v "DisableTaskOffload" /f >>"%log%" 2>&1
+:: reg delete "%regpath%" /v "Tcp1323Opts" /f >>"%log%" 2>&1
+:: reg delete "%regpath%" /v "TcpAckFrequency" /f >>"%log%" 2>&1
+:: reg delete "%regpath%" /v "TcpDelAckTicks" /f >>"%log%" 2>&1
+:: reg delete "%regpath%" /v "TcpNoDelay" /f >>"%log%" 2>&1
+:: endlocal
+:: goto :TTD
+:: :TTD
+:: echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
 echo "SCHTASKS" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
