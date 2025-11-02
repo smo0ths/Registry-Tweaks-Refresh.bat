@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.7.5
+# Registry-Tweaks-Refresh.bat v0.7.6
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -412,6 +412,10 @@ echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost (set REG_DWO
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 3)" >> "%log%"
 
+:: echo "WHEA LOGGER" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f
+:: reg delete "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /f
+
 echo "SENSORS STUFF" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{09485F5A-759E-4A45-B622-5C7F2FCE985E}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{5C5C4656-0E77-4F44-BF4C-8C0C8A76E8A7}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -427,7 +431,7 @@ sc triggerinfo SensorService starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SensrSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo SensrSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
-echo "WHO YOU ARE, WHAT YOU CAN RUN(AppIDSvc) DISABLE" >> "%log%"
+echo "WHO YOU ARE, WHAT YOU CAN RUN(APPIDSVC) DISABLE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\AppID\VerifiedPublisherCertStoreCheck" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
@@ -452,6 +456,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\fdPHost" /v "Start" /t REG_DWORD
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FDResPub" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo FDResPub starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+
+echo "WIRELESS RADIO SIGNALS TOGGLE FOR WI-FI/BLUETOOTH/CELLULAR/AIRPLANE MODE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RmSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+sc triggerinfo RmSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
 echo "PREFETCH\SUPERFETCH\SYSMAIN DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
@@ -629,8 +637,6 @@ sc triggerinfo netprofm starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo PcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\RmSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-sc triggerinfo RmSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo StorSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TextInputManagementService" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
@@ -639,7 +645,7 @@ echo "this is fine (is triggered, Access denied, [SC] OpenService FAILED 5:)" >>
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 echo "this is fine (TrkWks)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v Type /t REG_SZ /d NoSync /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NoSync /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
@@ -910,12 +916,12 @@ reg add "HKLM\SYSTEM\Maps" /v "AutoUpdateEnabled" /t REG_DWORD /d 0 /f >>"%log%"
 echo "AllowUpgradesWithUnsupportedTPMOrCPU" >> "%log%"
 reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
-echo "MICROSOFT CLOUD IDENTITY SERVICE" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\cloudidsvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-sc triggerinfo cloudidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+echo "MICROSOFT CLOUD IDENTITY SERVICE DISABLED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\cloudidsvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo cloudidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
-echo "CLOUD RESET" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\CloudBackupRestoreSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+echo "CLOUD RESET DISABLED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\CloudBackupRestoreSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1s
 
 echo "OEM UTILITIES,LMS,AMT,ME Firmware,MEIx64" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MEIx64" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
@@ -1003,11 +1009,12 @@ powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -MinRto 
 powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -NonSackRttResiliency enabled" >>"%log%" 2>&1
 powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -ScalingHeuristics enabled" >>"%log%" 2>&1
 powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -Timestamps enabled" >>"%log%" 2>&1
+
+echo "VARIOUS NETWORK DEFAULTS LEGACY/LOW IMPACT" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "explorer.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "iexplore.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPERSERVER" /v "explorer.exe" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPERSERVER" /v "iexplore.exe" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "NetworkThrottlingIndex" /t REG_DWORD /d 10 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "LargeSystemCache" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "Size" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "DefaultTTL" /t REG_DWORD /d 128 /f >>"%log%" 2>&1
@@ -1023,6 +1030,9 @@ powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoale
 
 :: echo "-RECEIVESEGMENTCOALESCING DEFAULT" >> "%log%"
 :: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled" >>"%log%" 2>&1
+
+echo "10 ENABLES NETWORK THROTTLING 4294967295(-1) DISABLES" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "NetworkThrottlingIndex" /t REG_DWORD /d 4294967295 /f >>"%log%" 2>&1
 
 echo "VARIOUS NETWORK TWEAKS" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 10 /f >>"%log%" 2>&1
