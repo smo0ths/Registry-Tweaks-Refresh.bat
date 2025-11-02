@@ -403,7 +403,7 @@ echo "CRASH REPORTING BACKBONE OF WINDOWS DISABLED DEFAULT 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo WerSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
-echo "ENABLING LOCAL TROUBLESHOOTING ENGINE DPS/WDISERVICEHOST/WDISYSTEMHOST DEFAULT 2" >> "%log%"s
+echo "ENABLING LOCAL TROUBLESHOOTING ENGINE DPS/WDISERVICEHOST/WDISYSTEMHOST DEFAULT 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\DPS (set REG_DWORD 2)" >> "%log%"
 echo "TROUBLESHOOTING/DIAGNOSTICS/HEALTH MONITORING (AUTOMATED TROUBLESHOOTING/ERROR REPORTS) DEFAULT 3" >> "%log%"
