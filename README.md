@@ -920,8 +920,8 @@ echo "MICROSOFT CLOUD IDENTITY SERVICE DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\cloudidsvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo cloudidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
-echo "CLOUD RESET DISABLED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\CloudBackupRestoreSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1s
+echo "MICROSOFT CLOUD BACKUP SERVICE/CLOUD RESET DISABLED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\CloudBackupRestoreSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 
 echo "OEM UTILITIES,LMS,AMT,ME Firmware,MEIx64" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MEIx64" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
