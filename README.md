@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.7.6
+# Registry-Tweaks-Refresh.bat v0.7.7
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -378,8 +378,8 @@ echo "THIS PREVENTS WINDOWS FROM AUTO-ASSIGNING MUSIC/PICTURES/VIDEOS TEMPLATES 
 reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /t REG_SZ /d NotSpecified /f >>"%log%" 2>&1
 :: reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v FolderType /f >>"%log%" 2>&1
 
-echo "WINHTTP WEB PROXY AUTO-DISCOVERY SERVICE (WPAD) PROTOCOL -> NETSH WINHTTP SHOW PROXY -> IF DIRECT ACCESS (NO PROXY SERVER) -> DISABLE, DEFAULT 3" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinHttpAutoProxySvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+echo "WINHTTP WEB PROXY AUTO-DISCOVERY SERVICE (WPAD) PROTOCOL CHECK WITH (NETSH WINHTTP SHOW PROXY) DEFAULT 3" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinHttpAutoProxySvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 
 echo "WIFI STUFF" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" /v "Value" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
