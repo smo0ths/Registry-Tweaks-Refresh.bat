@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.7.8
+# Registry-Tweaks-Refresh.bat v0.7.9
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -331,6 +331,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Schedule
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
+echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD-PARTY) DEFAULT 2" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+
 echo "BOOSTS GAMING PERFORMANCE" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Affinity" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Background Only" /t REG_SZ /d "False" /f >>"%log%" 2>&1
@@ -636,7 +639,6 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WManSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 
 echo "VARIOUS SERVICES SET CORRECTLY" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo ConsentUxUserSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
