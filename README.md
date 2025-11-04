@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.7.9
+# Registry-Tweaks-Refresh.bat v0.8.0
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -327,17 +327,27 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Detectio
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "DetectionFrequencyEnabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "NoAutoRebootWithLoggedOnUsers" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "NoAutoUpdate" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallDay" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallDay" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
 echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD-PARTY) DEFAULT 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 
+echo "CHECK YOUR CURRENT TIMER RESOLUTION (Get-Process | Where-Object { $_.Name -eq "System" } | Measure-Command { })"
+echo "TIMER RESOLUTION (10000×100ns = 1,000,000ns = 1 millisecond)" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 10000 /f >>"%log%" 2>&1
+
+:: echo "TIMER RESOLUTION (5000×100ns = 500,000ns = 0.5 milliseconds)" >> "%log%"
+:: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 5000 /f >>"%log%" 2>&1
+
+:: echo "TIMER RESOLUTION DEFAULT BUT NOT IN REGISTRY SO USE DELETE FOR DEFAULT (156250×100ns = 15,625,000ns = 15.625 milliseconds)" >> "%log%"
+:: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 156250 /f >>"%log%" 2>&1
+:: reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /f >>"%log%" 2>&1
+
 echo "BOOSTS GAMING PERFORMANCE" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Affinity" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Background Only" /t REG_SZ /d "False" /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 10000 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Priority" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >>"%log%" 2>&1
@@ -346,7 +356,6 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProf
 :: echo "BOOSTS GAMING PERFORMANCE DEFAULTS" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Affinity" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Background Only" /t REG_SZ /d "False" /f >>"%log%" 2>&1
-:: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 10000 /f >>"%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f >>"%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Priority" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >>"%log%" 2>&1
@@ -432,8 +441,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 3)" >> "%log%"
 
 :: echo "WHEA LOGGER" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f
-:: reg delete "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /f
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+:: reg delete "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /f >>"%log%" 2>&1
 
 echo "SENSORS STUFF" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{09485F5A-759E-4A45-B622-5C7F2FCE985E}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -454,7 +463,7 @@ echo "WHO YOU ARE, WHAT YOU CAN RUN(APPIDSVC) DISABLE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\AppID\VerifiedPublisherCertStoreCheck" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
-:: echo "WHO YOU ARE, WHAT YOU CAN RUN(AppIDSvc) ENABLE" >> "%log%"
+:: echo "WHO YOU ARE, WHAT YOU CAN RUN(APPIDSVC) ENABLE" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 :: sc triggerinfo AppIDSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 :: schtasks /change /tn "\Microsoft\Windows\AppID\VerifiedPublisherCertStoreCheck" /enable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
@@ -907,7 +916,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\WMDRM" /v "DisableOnline" /t REG_DWORD
 echo "HIBERNATE DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "HibernateEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "CLEAR VIRTUAL MEMORY FOR SECURITY(slows down shutdown time)" >> "%log%"
+echo "CLEAR VIRTUAL MEMORY FOR SECURITY(SLOWS DOWN SHUTDOWN TIME)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "ClearPageFileAtShutdown" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
 echo "HKLM CONTROL" >> "%log%"
@@ -920,7 +929,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Sta
 echo "MAPS" >> "%log%"
 reg add "HKLM\SYSTEM\Maps" /v "AutoUpdateEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "AllowUpgradesWithUnsupportedTPMOrCPU" >> "%log%"
+echo "ALLOW UPGRADES WITH UNSUPPORTED TPM OR CPU" >> "%log%"
 reg add "HKLM\SYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
 echo "MICROSOFT CLOUD IDENTITY SERVICE DISABLED" >> "%log%"
@@ -930,7 +939,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\cloudidsvc" /v "Start" /t REG_DW
 echo "MICROSOFT CLOUD BACKUP SERVICE/CLOUD RESET DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CloudBackupRestoreSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 
-echo "OEM UTILITIES,LMS,AMT,ME Firmware,MEIx64" >> "%log%"
+echo "OEM UTILITIES,LMS,AMT,ME FIRMWARE,MEIX64" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MEIx64" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo WMIRegistrationService starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
