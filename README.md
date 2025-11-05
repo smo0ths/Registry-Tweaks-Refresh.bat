@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.8.3
+# Registry-Tweaks-Refresh.bat v0.8.4
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -292,49 +292,11 @@ goto invalidchoice
 :noPowerThrottling
 echo "DISABLING POWER THROTTLING" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-goto VPNchoice
+goto RTR
 
 :yesPowerThrottling
 echo "ENABLING POWER THROTTLING" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v "PowerThrottlingOff" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-goto VPNchoice
-
-:VPNchoice
-set /P VPNchoice=Y DISABLES VPN STUFF, N ENABLES/DEFAULTS [Y/N]:
-if /I "%VPNchoice%"=="Y" goto noVPNchoice
-if /I "%VPNchoice%"=="N" goto yesVPNchoice
-goto invalidchoice
-
-:noVPNchoice
-echo "DISABLING VPN STUFF" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\IKEEXT" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-:: sc triggerinfo IKEEXT starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-:: sc triggerinfo iphlpsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcaSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-:: sc triggerinfo NcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\PolicyAgent" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-:: sc triggerinfo PolicyAgent starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnOverMeteredNetworks" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnWhileRoaming" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\SstpSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 255 /f >>"%log%" 2>&1
-goto RTR
-
-:yesVPNchoice
-echo "ENABLING VPN STUFF" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\IKEEXT" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-sc triggerinfo IKEEXT starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-sc triggerinfo iphlpsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcaSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-sc triggerinfo NcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\PolicyAgent" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-sc triggerinfo PolicyAgent starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnOverMeteredNetworks" /t REG_DWORD /d 1 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnWhileRoaming" /t REG_DWORD /d 1 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\SstpSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 0 /f
 goto RTR
 
 :invalidchoice
@@ -368,6 +330,20 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "NoAutoUp
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallDay" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+
+echo "VPN/IPSEC/IPV6 INFRASTRUCTURE STUFF" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\IKEEXT" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+sc triggerinfo IKEEXT starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+sc triggerinfo iphlpsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcaSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+sc triggerinfo NcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\PolicyAgent" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+sc triggerinfo PolicyAgent starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnOverMeteredNetworks" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnWhileRoaming" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SstpSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
 echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD-PARTY) DEFAULT 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
