@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.8.2
+# Registry-Tweaks-Refresh.bat v0.8.3
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -372,6 +372,24 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUSer
 echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD-PARTY) DEFAULT 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 
+echo "MOUSE STUFF POINTER SPEED DEFAULT 10(registry/SystemSettings) 6/11(slider/main.cpl)" >> "%log%"
+reg add "HKCU\Control Panel\Desktop" /v "DragFullWindows" /t REG_SZ /d 1 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "DragHeight" /t REG_SZ /d 4 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "DragWidth" /t REG_SZ /d 4 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_SZ /d 400 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "SmoothScroll" /t REG_SZ /d 1 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "DoubleClickSpeed" /t REG_SZ /d 500 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "ListViewHoverTime" /t REG_SZ /d 400 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_SZ /d 400 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseSensitivity" /t REG_SZ /d 10 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseSpeed" /t REG_SZ /d 0 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseThreshold1" /t REG_SZ /d 0 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseThreshold2" /t REG_SZ /d 0 /f >>"%log%" 2>&1
+
+echo "HIDE SETTINGS PAGES DELETE RESTORES DEFAULT" >> "%log%"
+:: reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "SettingsPageVisibility" /t REG_SZ /d "hide:home" /f >>"%log%" 2>&1
+reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "SettingsPageVisibility" /f >>"%log%" 2>&1
+
 echo "CHECK YOUR CURRENT TIMER RESOLUTION (Get-Process | Where-Object { $_.Name -eq "System" } | Measure-Command { })" >> "%log%"
 echo "TIMER RESOLUTION (10000×100ns = 1,000,000ns = 1 millisecond)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 10000 /f >>"%log%" 2>&1
@@ -576,7 +594,7 @@ echo "this is fine (is triggered, Access denied, [SC] OpenService FAILED 5:)" >>
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TokenBroker" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo TokenBroker starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-echo "this is fine (TrustedInstaller)" >> "%log%"
+echo "this is fine HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller (set REG_DWORD 3) (should be default)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UdkUserSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo UdkUserSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UnistoreSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
@@ -702,7 +720,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\TextInputManagementService" /v "
 sc triggerinfo TextInputManagementService starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 echo "this is fine (is triggered, Access denied, [SC] OpenService FAILED 5:)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
-echo "this is fine (TrkWks)" >> "%log%"
+echo "this is fine HKLM\SYSTEM\CurrentControlSet\Services\TrkWks (set REG_DWORD 2) (should be default)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NoSync /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
@@ -773,14 +791,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD
 
 echo "PERSONALIZATION/EXPLORER/CONTROL PANEL TWEAKS/THEMES" >> "%log%"
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "DragFullWindows" /t REG_SZ /d 1 /f >>"%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "DragHeight" /t REG_SZ /d 2 /f >>"%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "DragWidth" /t REG_SZ /d 2 /f >>"%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_DWORD /d 200 /f >>"%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "SmoothScroll" /t REG_SZ /d 1 /f >>"%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "HungAppTimeout" /t REG_SZ /d 5000 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "WaitToKillAppTimeout" /t REG_SZ /d 20000 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v "MinAnimate" /t REG_SZ /d 0 /f >>"%log%" 2>&1
-reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_DWORD /d 500 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /ve /t REG_SZ /d "" /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Accessibility" /v "Animation" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "AutoCheckSelect" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -1225,6 +1238,7 @@ echo "Run after updates/repairs and REBOOT* now" >> "%log%"
 echo "Run after updates/repairs and REBOOT* now"
 
 powershell -c "(New-Object Media.SoundPlayer 'C:\Windows\Media\tada.wav').PlaySync()"
+:: RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters
 :: taskkill /f /im explorer.exe && start explorer.exe
 
 endlocal
