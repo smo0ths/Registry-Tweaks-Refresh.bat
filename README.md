@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.8.4
+# Registry-Tweaks-Refresh.bat v0.8.5
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -441,6 +441,15 @@ reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\B
 echo "WINHTTP WEB PROXY AUTO-DISCOVERY SERVICE (WPAD) PROTOCOL CHECK WITH (NETSH WINHTTP SHOW PROXY) DEFAULT 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinHttpAutoProxySvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 
+echo "WINHTTP WEB PROXY AUTO-DISCOVERY SERVICE (WPAD) DISABLEWPAD DEFAULT DELETE" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DisableWpad" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+:: reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DisableWpad" /f >>"%log%" 2>&1
+
+echo "REDUCES ATTACK SURFACE (TAKE OWNERSHIP CONTEXT MENU YOU MIGHT HAVE)" >> "%log%"
+reg delete "HKCR\*\shell\TakeOwnership" /f >>"%log%" 2>&1
+reg delete "HKCR\Directory\shell\TakeOwnership" /f >>"%log%" 2>&1
+echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
+
 echo "WIFI STUFF" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" /v "Value" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" /v "Value" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -790,7 +799,6 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "T
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" /v "EnthusiastMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v "VisualFXSetting" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers" /v "BackgroundType" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "SettingsPageVisibility" /t REG_SZ /d "hide:home" /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IndexerOption" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings" /v "IsDeviceSearchHistoryEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -1004,13 +1012,15 @@ reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\E
 reg delete "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /f >>"%log%" 2>&1
 echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
-echo "MICROSOFTEDGEUPDATETASKMACHINE DISABLED" >> "%log%"
+echo "EDGE STUFF MICROSOFTEDGEUPDATETASKMACHINE DISABLED" >> "%log%"
 for /f "tokens=2 delims=:" %%T in ('schtasks /query /fo LIST /v ^| findstr /i "TaskName:" ^| findstr /i "MicrosoftEdgeUpdateTaskMachine"') do (
     set "raw=%%T"
     set "task=!raw:~1!"
     set "task=!task: =!"
     schtasks /change /tn "!task!" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 )
+
+echo "EDGE STUFF DELETE EDGE ACTIVE SETUP STUBPATH" >> "%log%"
 for /f "tokens=*" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Active Setup\Installed Components"') do (
     for /f "tokens=2,*" %%b in ('reg query "%%a" /v StubPath 2^>nul ^| find /i "StubPath" ^| find /i "edge"') do (
         reg delete "%%a" /v "StubPath" /f >>"%log%" 2>&1
