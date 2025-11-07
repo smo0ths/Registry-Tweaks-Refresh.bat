@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.8.5
+# Registry-Tweaks-Refresh.bat v0.8.6
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -955,7 +955,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "IRQ8Priority
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener" /v "Start" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Start" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "MAPS" >> "%log%"
+echo "MAPS STUFF" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\MapsBroker" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\Maps" /v "AutoUpdateEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
 echo "ALLOW UPGRADES WITH UNSUPPORTED TPM OR CPU" >> "%log%"
