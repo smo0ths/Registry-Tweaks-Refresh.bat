@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.8.6
+# Registry-Tweaks-Refresh.bat v0.8.7
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -438,12 +438,11 @@ echo "THIS PREVENTS WINDOWS FROM AUTO-ASSIGNING MUSIC/PICTURES/VIDEOS TEMPLATES 
 reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /t REG_SZ /d NotSpecified /f >>"%log%" 2>&1
 :: reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v FolderType /f >>"%log%" 2>&1
 
-echo "WINHTTP WEB PROXY AUTO-DISCOVERY SERVICE (WPAD) PROTOCOL CHECK WITH (NETSH WINHTTP SHOW PROXY) DEFAULT 3" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinHttpAutoProxySvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-
-echo "WINHTTP WEB PROXY AUTO-DISCOVERY SERVICE (WPAD) DISABLEWPAD DEFAULT DELETE" >> "%log%"
+echo "WINHTTP WEB PROXY AUTO-DISCOVERY SERVICE (WPAD) PROTOCOL CHECK WITH (NETSH WINHTTP SHOW PROXY) (DISABLEWPAD DEFAULT DELETE)" >> "%log%"
+:: reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" /v "AutoDetect" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DisableWpad" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 :: reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DisableWpad" /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinHttpAutoProxySvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 
 echo "REDUCES ATTACK SURFACE (TAKE OWNERSHIP CONTEXT MENU YOU MIGHT HAVE)" >> "%log%"
 reg delete "HKCR\*\shell\TakeOwnership" /f >>"%log%" 2>&1
@@ -686,8 +685,8 @@ echo "VARIOUS SERVICES SET CORRECTLY" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo ConsentUxUserSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-sc triggerinfo DispBrokerDesktopSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "DelayedAutoStart" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
