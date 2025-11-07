@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.8.7
+# Registry-Tweaks-Refresh.bat v0.8.8
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -471,10 +471,9 @@ echo "CRASH REPORTING BACKBONE OF WINDOWS DISABLED DEFAULT 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo WerSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
-echo "ENABLING LOCAL TROUBLESHOOTING ENGINE DPS/WDISERVICEHOST/WDISYSTEMHOST DEFAULT 2" >> "%log%"
+echo "ENABLING LOCAL TROUBLESHOOTING/DIAGNOSTICS/HEALTH MONITORING (AUTOMATED TROUBLESHOOTING/ERROR REPORTS)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\DPS (set REG_DWORD 2)" >> "%log%"
-echo "TROUBLESHOOTING/DIAGNOSTICS/HEALTH MONITORING (AUTOMATED TROUBLESHOOTING/ERROR REPORTS) DEFAULT 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost (set REG_DWORD 3)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
@@ -692,12 +691,14 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWOR
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+sc triggerinfo Netman starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo netprofm starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo PcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
+sc triggerinfo PlugPlay starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo StorSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TextInputManagementService" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
