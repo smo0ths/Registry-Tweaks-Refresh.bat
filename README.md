@@ -855,7 +855,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" /v "HideSCAMeetNow" 
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v "ChatIcon" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "EnableDynamicContentInWSB" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "HKCU SIUF" >> "%log%"
+echo "DISABLE WINDOWS FEEDBACK NOTIFICATIONS (SYSTEM INITIATED USER FEEDBACK/SIUF/TELEMETRY/CEP)" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Siuf\Rules" /v "NumberOfSIUFInPeriod" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Siuf\Rules" /v "PeriodInNanoSeconds" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
