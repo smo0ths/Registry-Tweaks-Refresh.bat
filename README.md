@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.8.8
+# Registry-Tweaks-Refresh.bat v0.8.9
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -774,6 +774,13 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD
 :: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "DisableSearch" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 
+echo "FILE HISTORY SERVICE (FHSVC) STUFF" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\FileHistory" /v "Disabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+:: reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\FileHistory" /v "Disabled" /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\fhsvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: sc triggerinfo fhsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+schtasks /change /tn "\Microsoft\Windows\FileHistory\File History (maintenance mode)" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+
 echo "PERSONALIZATION/EXPLORER/CONTROL PANEL TWEAKS/THEMES" >> "%log%"
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "HungAppTimeout" /t REG_SZ /d 5000 /f >>"%log%" 2>&1
@@ -919,7 +926,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableWindo
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "IncludeEnterpriseSpotlight" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CredUI" /v "DisablePasswordReveal" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" /v "NoTileApplicationNotification" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\FileHistory" /v "Disabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\HandwritinReports" /v "PreventHandwritinReports" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "DisableLocation" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "DisableLocationScripting" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
@@ -1161,7 +1167,6 @@ schtasks /change /tn "\Microsoft\Windows\Diagnosis\Scheduled" /disable 2>&1 | fi
 schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 schtasks /change /tn "\Microsoft\Windows\DiskFootprint\Diagnostics" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 schtasks /change /tn "\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-schtasks /change /tn "\Microsoft\Windows\FileHistory\File History (maintenance mode)" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 schtasks /change /tn "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 schtasks /change /tn "\Microsoft\Windows\Maintenance\WinSAT" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 schtasks /change /tn "\Microsoft\Windows\Maps\MapsToastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
