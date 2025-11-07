@@ -1,8 +1,7 @@
-# Registry-Tweaks-Refresh.bat v0.9.0
+# Registry-Tweaks-Refresh.bat v0.9.1
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
-#### %ProgramData%\Microsoft\Windows\Start Menu\Programs\Startup (throw .bat into here so you can turn off just windows updates when they pop up randomly every boot)
 #### use Autoruns64.exe to find out more about your PC's autoruns
 
 ```python
@@ -10,36 +9,6 @@ Windows 11 Registry Tweaks
 color 0A
 :: mode con: cols=80 lines=20
 setlocal EnableDelayedExpansion
-
-set "log=%userprofile%\desktop\registry-tweaks-refresh.txt"
-set "hour=%time:~0,2%"
-set "min=%time:~3,2%"
-set "sec=%time:~6,2%"
-if "%hour:~0,1%"==" " set "hour=0%hour:~1,1%"
-set /a hourInt=1%hour%-100
-set "ampm=AM"
-if %hourInt% GEQ 12 set "ampm=PM"
-if %hourInt% GTR 12 set /a hourInt-=12
-if %hourInt%==0 set hourInt=12
-title %~nx0 - %date% %hourInt%:%min%:%sec% %ampm%
-
-:AUTOUpdatechoice
-set /P AUTOUpdatechoice=Y JUST STOP/DISABLE wuauserv(Windows Update)/UsoSvc(Update Orchestrator), N SKIPS [Y/N]:
-if /I "%AUTOUpdatechoice%"=="Y" goto yesAUTO
-if /I "%AUTOUpdatechoice%"=="N" goto noAUTO
-goto invalidchoice
-
-:yesAUTO
-echo "RE-DISABLING wuauserv(Windows Update)/UsoSvc(Update Orchestrator)" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop wuauserv 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-goto restorechoice
-
-:noAUTO
-echo "SKIPPING wuauserv(Windows Update)/UsoSvc(Update Orchestrator) stop/disable" >> "%log%"
-goto restorechoice
 
 :restorechoice
 set /P restorechoice=Y OPENS SYSTEM PROPERTIES SO YOU CAN CREATE A RESTORE POINT, N SKIPS [Y/N]:
@@ -331,7 +300,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Detectio
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "DetectionFrequencyEnabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "NoAutoRebootWithLoggedOnUsers" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "NoAutoUpdate" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "NoAutoUpdate" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallDay" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -436,10 +404,8 @@ reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v
 echo "CHECK YOUR CURRENT TIMER RESOLUTION (Get-Process | Where-Object { $_.Name -eq "System" } | Measure-Command { })" >> "%log%"
 echo "TIMER RESOLUTION (10000×100ns = 1,000,000ns = 1 millisecond)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 10000 /f >>"%log%" 2>&1
-
 :: echo "TIMER RESOLUTION (5000×100ns = 500,000ns = 0.5 milliseconds)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 5000 /f >>"%log%" 2>&1
-
 :: echo "TIMER RESOLUTION DEFAULT BUT NOT IN REGISTRY SO USE DELETE FOR DEFAULT (156250×100ns = 15,625,000ns = 15.625 milliseconds)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 156250 /f >>"%log%" 2>&1
 :: reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /f >>"%log%" 2>&1
@@ -451,7 +417,6 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProf
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Priority" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "SFIO Priority" /t REG_SZ /d "Low" /f >>"%log%" 2>&1
-
 :: echo "BOOSTS GAMING PERFORMANCE DEFAULTS" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Affinity" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Background Only" /t REG_SZ /d "False" /f >>"%log%" 2>&1
@@ -474,7 +439,6 @@ reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d 0 /f 
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehaviorMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_HonorUserFSEBehaviorMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-
 :: echo "EFSE/FSO/GAMEDVR DEFAULTS" >> "%log%"
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DSEBehavior" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DXGIHonorFSEWindowsCompatible" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -483,7 +447,6 @@ reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_HonorUserFSEBehaviorMode" /t R
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehaviorMode" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_HonorUserFSEBehaviorMode" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-
 echo "GAMEDVR OFF KEYS" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AllowGameDVR" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -492,7 +455,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v "AllowGameDVR" /t 
 echo "GAME MODE LEAVE ON UNLESS YOU THINK ITS BREAKING SOMETHING" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AllowAutoGameMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AutoGameModeEnabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-
 echo "GAMEBAR" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "GamePanelStartupTipIndex" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "ShowStartupPanel" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -570,11 +532,10 @@ sc triggerinfo SensorService starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SensrSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo SensrSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
-echo "WHO YOU ARE, WHAT YOU CAN RUN(APPIDSVC) DISABLE" >> "%log%"
+echo "WHO YOU ARE, WHAT YOU CAN RUN (APPIDSVC) DISABLE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\AppID\VerifiedPublisherCertStoreCheck" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
-
-:: echo "WHO YOU ARE, WHAT YOU CAN RUN(APPIDSVC) ENABLE" >> "%log%"
+:: echo "WHO YOU ARE, WHAT YOU CAN RUN (APPIDSVC) ENABLE" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppIDSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 :: sc triggerinfo AppIDSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 :: schtasks /change /tn "\Microsoft\Windows\AppID\VerifiedPublisherCertStoreCheck" /enable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
@@ -603,7 +564,7 @@ sc triggerinfo RmSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 echo "PREFETCH\SUPERFETCH\SYSMAIN DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SysMain" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 
-echo "REMOTE STUFF" >> "%log%"
+echo "REMOTE STUFF DISABLED" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Remote Assistance" /v "fAllowToGetHelp" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v "fAllowToGetHelp" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" /v "fDisableAudioCapture" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
@@ -786,7 +747,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t RE
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\wscsvc (set REG_DWORD 2) (should be default)" >> "%log%"
 
-echo "XBOX STUFF" >> "%log%"
+echo "XBOX STUFF (ONLY NEED XBOXGIP FOR CONTROLLER)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo XblAuthManager starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblGameSave" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
@@ -800,7 +761,7 @@ schtasks /change /tn "\Microsoft\Windows\Shell\XblGameSaveTask" /disable 2>&1 | 
 schtasks /change /tn "\Microsoft\XblGameSave\XblGameSaveTask" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 echo "this is fine (ERROR: The specified task name "" does not exist in the system.)" >> "%log%"
 
-echo "BITLOCKER OFF" >> "%log%"
+echo "BITLOCKER DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BDESVC" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo BDESVC starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
@@ -835,13 +796,12 @@ echo "YOU DON'T WANT SEARCH BOX AND RANDOM IO FROM SEARCHINDEXER/SEARCHHOST AND 
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "DisableSearch" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-
 :: echo "YOU WANT SEARCH BOX AND RANDOM IO FROM SEARCHINDEXER/SEARCHHOST AND 6X MSEDGEWEBVIEW2" >> "%log%"
 :: reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "DisableSearch" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSearch" /v "Start" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 
-echo "FILE HISTORY SERVICE (FHSVC) STUFF" >> "%log%"
+echo "FILE HISTORY SERVICE (FHSVC) STUFF DISABLED" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\FileHistory" /v "Disabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 :: reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\FileHistory" /v "Disabled" /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\fhsvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
@@ -926,9 +886,12 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-353698Enabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-88000326Enabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "DISABLE CROSSDEVICERESUME AND ACTIVITY HISTORY" >> "%log%"
+echo "DISABLE ONEDRIVE RESUME/LOCAL RESUME (CROSSDEVICERESUME)" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CrossDeviceResume\Configuration" /v "IsOneDriveResumeAllowed" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CrossDeviceResume\Configuration" /v "IsResumeAllowed" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+
+echo "DISABLE CONNECTED DEVICES PLATFORM (CDP)" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "EnableCdp" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
 echo "DISABLE BING SEARCH AND SEARCH HISTORY" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "BingSearchEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -987,10 +950,9 @@ echo "DISABLE HANDWRITING DATA SHARING" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\HandwritinReports" /v "PreventHandwritinReports" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\TabletPC" /v "PreventHandwritingDataSharing" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
-echo "DISABLE SETTINGS SYNC AND CROSS DEVICE FEATURES" >> "%log%"
+echo "DISABLE SETTINGS SYNC" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\SettingSync" /v "DisableSettingSync" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\SettingSync" /v "DisableSettingSyncUserOverride" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "EnableCdp" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
 echo "DISABLE WEB SEARCH AND CLOUD INTEGRATION" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCloudSearch" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -1008,13 +970,13 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" /v "NoActiveHel
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Assistance\Client\1.0" /v "NoExplicitFeedback" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Biometrics" /v "Enabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "DISABLE SOFTWARE PROTECTION TICKET AND MULTICAST DNS" >> "%log%"
+echo "DISABLE SOFTWARE PROTECTION TICKET" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\SOFTWARE Protection Platform" /v "NoGenTicket" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+
+echo "DISABLE MULTICAST DNS" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" /v "EnableMulticast" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "DISABLE APP COMPATIBILITY TELEMETRY AND INVENTORY" >> "%log%"
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "AITEnable" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "DisableInventory" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+echo "DISABLE PROGRAM COMPATIBILITY ASSISTANT (PCA)" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "DisablePCA" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
 echo "INVENTORY AND COMPATIBILITY APPRAISAL SERVICE (INVENTORYSVC)" >> "%log%"
@@ -1030,6 +992,8 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\Windows Reporting" /v "Disabled" /t REG
 reg add "HKLM\SOFTWARE\Policies\Microsoft\SQMClient" /v "CEIPEnable" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\SQMClient" /v "CorporateSQMURL" /t REG_SZ /d 0.0.0.0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\SQMClient\Windows" /v "CEIPEnable" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "AITEnable" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "DisableInventory" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "AllowTelemetry" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "DisableTelemetryOptInSettingsUx" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "DoNotShowFeedbackNotifications" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
@@ -1049,7 +1013,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCorta
 echo "HIBERNATE DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "HibernateEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "CLEAR VIRTUAL MEMORY FOR SECURITY(SLOWS DOWN SHUTDOWN TIME)" >> "%log%"
+echo "CLEAR VIRTUAL MEMORY FOR SECURITY (SLOWS DOWN SHUTDOWN TIME)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "ClearPageFileAtShutdown" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
 echo "HKLM CONTROL" >> "%log%"
@@ -1293,7 +1257,6 @@ schtasks /change /tn "\Microsoft\Windows\WaaSMedic\MaintenanceWork" /disable 2>&
 schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 echo "this is fine (ERROR: The specified task name "" does not exist in the system.)" >> "%log%"
-
 :: echo "SCHTASKS CANNOT DISABLE" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Shell\UpdateUserPictureTask" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 :: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Report policies" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
