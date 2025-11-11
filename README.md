@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.9.1
+# Registry-Tweaks-Refresh.bat v0.9.2
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -428,18 +428,17 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProf
 echo "BOOSTS/QUANTUM DEFAULT IS BALANCE/SAFER=26 (2:1/SHORT) EVEN/RESPONSIVE/SMOOTH=2 (1:1/SHORT) GAME ONLY/LEAST BACKGROUND=38 (3:1/SHORT)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 26 /f >>"%log%" 2>&1
 
-echo "FULLSCREEN EXCLUSIVE (FSE): BYPASSES DWM FOR LOWEST LATENCY AND MAX PERFORMANCE, BUT ALT‑TABBING IS SLOW/FLICKERY; FORCE IT BY CHECKING DISABLE FULLSCREEN OPTIMIZATIONS IN GAMES.EXE" >> "%log%"
-echo "FULLSCREEN OPTIMIZATIONS (FO/EFSE): USES FLIP-MODEL PRESENTATION THROUGH DWM FOR NEAR‑FSE PERFORMANCE WITH INSTANT ALT‑TAB AND WORKING OVERLAYS/NOTIFICATIONS." >> "%log%"
 echo "BORDERLESS FULLSCREEN: ALWAYS COMPOSITED BY DWM, SIMPLEST AND MOST STABLE BUT LESS EFFICIENT THAN FO/EFSE." >> "%log%"
-echo "EFSE/FSO/GAMEDVR LOWEST INPUT LATENCY (ENHANCED FULLSCREEN EXCLUSIVE/FULLSCREEN EXCLUSIVE)" >> "%log%"
-reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DSEBehavior" /t REG_DWORD /d 2 /f >>"%log%" 2>&1
+echo "FULLSCREEN EXCLUSIVE (FSE): BYPASSES DWM FOR LOWEST LATENCY/BEST PERFORMANCE, BUT ALT‑TABBING IS SLOW/FLICKERY; FORCE IT BY CHECKING DISABLE FULLSCREEN OPTIMIZATIONS IN GAMES.EXE OR DSEBEHAVIOR=2" >> "%log%"
+echo "FULLSCREEN OPTIMIZATIONS (FO/EFSE): USES FLIP-MODEL PRESENTATION THROUGH DWM FOR NEAR‑FSE PERFORMANCE WITH INSTANT ALT‑TAB AND WORKING OVERLAYS/NOTIFICATIONS." >> "%log%"
+reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DSEBehavior" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DXGIHonorFSEWindowsCompatible" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehavior" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_FSEBehaviorMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_HonorUserFSEBehaviorMode" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-:: echo "EFSE/FSO/GAMEDVR DEFAULTS" >> "%log%"
+:: echo "FSE/EFSE(FO) ECT DEFAULTS" >> "%log%"
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DSEBehavior" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DXGIHonorFSEWindowsCompatible" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 :: reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
