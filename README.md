@@ -17,7 +17,7 @@ fltmc >nul 2>&1 || (
 color 0A
 :: mode con: cols=80 lines=20
 
-:: "ENVIRONMENT"
+:: echo "ENVIRONMENT"
 setlocal EnableDelayedExpansion
 set "log=%userprofile%\desktop\registry-tweaks-refresh.txt"
 
