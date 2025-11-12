@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.9.2
+# Registry-Tweaks-Refresh.bat v0.9.3
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it often (after updates) and force the CHANGE* regs in log
 #### %windir%\System32\SystemPropertiesProtection.exe (create restore point on protected drive, code will prompt you)
@@ -6,12 +6,24 @@ Windows 11 Registry Tweaks
 
 ```python
 @echo off
+
+:: echo "CHECK ADMIN RIGHTS USING FLTMC (WORKS WITHOUT SERVER SERVICE)"
+fltmc >nul 2>&1 || (
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
+
+:: echo "COSMETIC"
 color 0A
 :: mode con: cols=80 lines=20
+
+:: "ENVIRONMENT"
 setlocal EnableDelayedExpansion
+set "log=%userprofile%\desktop\registry-tweaks-refresh.txt"
 
 :restorechoice
-set /P restorechoice=Y OPENS SYSTEM PROPERTIES SO YOU CAN CREATE A RESTORE POINT, N SKIPS [Y/N]:
+echo "Y OPENS SYSTEM PROPERTIES SO YOU CAN CREATE A RESTORE POINT, N SKIPS"
+set /P restorechoice=[Y/N]:
 if /I "%restorechoice%"=="Y" goto yesrestore
 if /I "%restorechoice%"=="N" goto norestore 
 goto invalidchoice
@@ -23,10 +35,12 @@ goto updatechoice
 
 :norestore
 echo "SKIPPING RESTORE POINT" >> "%log%"
+echo "SKIPPING RESTORE POINT"
 goto updatechoice
 
 :updatechoice
-set /P updatechoice=Y DISABLES WINDOWS UPDATES, N ENABLES/DEFAULTS [Y/N]:
+echo "Y DISABLES WINDOWS UPDATES, N ENABLES/DEFAULTS"
+set /P updatechoice=[Y/N]:
 if /I "%updatechoice%"=="Y" goto disableupdates
 if /I "%updatechoice%"=="N" goto enableupdates
 goto invalidchoice
@@ -52,7 +66,8 @@ sc triggerinfo wuauserv starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%
 goto AUTODRIVchoice
 
 :AUTODRIVchoice
-set /P AUTODRIVchoice=Y DISABLES AUTOMATICALLY SEARCH WINDOWS UPDATE FOR DRIVERS WHEN NEW HARDWARE IS CONNECTED, N ENABLES/DEFAULTS [Y/N]:
+echo "Y DISABLES AUTOMATICALLY SEARCH WINDOWS UPDATE FOR DRIVERS WHEN NEW HARDWARE IS CONNECTED, N ENABLES/DEFAULTS"
+set /P AUTODRIVchoice=[Y/N]:
 if /I "%AUTODRIVchoice%"=="Y" goto disableAUTODRIVchoice
 if /I "%AUTODRIVchoice%"=="N" goto enableAUTODRIVchoice
 goto invalidchoice
@@ -61,34 +76,36 @@ goto invalidchoice
 echo "DISABLING AUTOMATICALLY SEARCH WINDOWS UPDATE FOR DRIVERS WHEN NEW HARDWARE IS CONNECTED" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-goto CUMchoice
+goto DRIVERchoice
 
 :enableAUTODRIVchoice
 echo "ENABLING AUTOMATICALLY SEARCH WINDOWS UPDATE FOR DRIVERS WHEN NEW HARDWARE IS CONNECTED" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-goto CUMchoice
+goto DRIVERchoice
 
-:CUMchoice
-set /P CUMchoice=Y DISABLES WINDOWS UPDATE TO DELIVER DRIVER UPDATES ALONG WITH NORMAL UPDATES, N ENABLES/DEFAULTS [Y/N]:
-if /I "%CUMchoice%"=="Y" goto disableCUMchoice
-if /I "%CUMchoice%"=="N" goto enableCUMchoice
+:DRIVERchoice
+echo "Y DISABLES WINDOWS UPDATE TO DELIVER DRIVER UPDATES ALONG WITH NORMAL UPDATES, N ENABLES/DEFAULTS"
+set /P DRIVERchoice=[Y/N]:
+if /I "%DRIVERchoice%"=="Y" goto disableDRIVERchoice
+if /I "%DRIVERchoice%"=="N" goto enableDRIVERchoice
 goto invalidchoice
 
-:disableCUMchoice
+:disableDRIVERchoice
 echo "DISABLING WINDOWS UPDATE TO DELIVER DRIVER UPDATES ALONG WITH NORMAL UPDATES" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "ExcludeWUDrivers" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v "ExcludeWUDriversInQualityUpdate" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 goto printerchoice
 
-:enableCUMchoice
+:enableDRIVERchoice
 echo "ENABLING WINDOWS UPDATE TO DELIVER DRIVER UPDATES ALONG WITH NORMAL UPDATES" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\PolicyState" /v "ExcludeWUDrivers" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v "ExcludeWUDriversInQualityUpdate" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 goto printerchoice
 
 :printerchoice
-set /P printerchoice=Y DISABLES PRINTER, N ENABLES/DEFAULTS [Y/N]:
+echo "Y DISABLES PRINTER, N ENABLES/DEFAULTS"
+set /P printerchoice=[Y/N]:
 if /I "%printerchoice%"=="Y" goto disableprinter
 if /I "%printerchoice%"=="N" goto enableprinter
 goto invalidchoice
@@ -109,7 +126,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD
 goto copilotchoice
 
 :copilotchoice
-set /P copilotchoice=Y DISABLES WINDOWS COPILOT, N ENABLES/DEFAULTS [Y/N]:
+echo "Y DISABLES WINDOWS COPILOT, N ENABLES/DEFAULTS"
+set /P copilotchoice=[Y/N]:
 if /I "%copilotchoice%"=="Y" goto disablecopilot
 if /I "%copilotchoice%"=="N" goto enablecopilot
 goto invalidchoice
@@ -127,7 +145,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WSAIFabricSvc" /v "Start" /t REG
 goto interestschoice
 
 :interestschoice
-set /P interestschoice=Y DISABLES NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT, N ENABLES/DEFAULTS [Y/N]:
+echo "Y DISABLES NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT, N ENABLES/DEFAULTS"
+set /P interestschoice=[Y/N]:
 if /I "%interestschoice%"=="Y" goto disableinterests
 if /I "%interestschoice%"=="N" goto enableinterests
 goto invalidchoice
@@ -159,7 +178,8 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v "EnableFeeds
 goto touchchoice
 
 :touchchoice
-set /P touchchoice=Y DISABLES TOUCH SCREEN STUFF, N ENABLES/DEFAULTS [Y/N]:
+echo "Y DISABLES TOUCH SCREEN STUFF, N ENABLES/DEFAULTS"
+set /P touchchoice=[Y/N]:
 if /I "%touchchoice%"=="Y" goto disabletouch
 if /I "%touchchoice%"=="N" goto enabletouch
 goto invalidchoice
@@ -216,7 +236,8 @@ sc triggerinfo PenService starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%lo
 goto bluechoice
 
 :bluechoice
-set /P bluechoice=Y DISABLES BLUETOOTH, N ENABLES/DEFAULTS [Y/N]:
+echo "Y DISABLES BLUETOOTH, N ENABLES/DEFAULTS"
+set /P bluechoice=[Y/N]:
 if /I "%bluechoice%"=="Y" goto noblue
 if /I "%bluechoice%"=="N" goto yesblue
 goto invalidchoice
@@ -253,7 +274,8 @@ sc triggerinfo DevicesFlowUserSvc starttype= all 2>&1 | findstr /I "ERROR FAILED
 goto PowerThrottlingchoice
 
 :PowerThrottlingchoice
-set /P PowerThrottlingchoice=Y DISABLES POWER THROTTLING, N ENABLES/DEFAULTS (laptops ect.) [Y/N]:
+echo "Y DISABLES POWER THROTTLING, N ENABLES/DEFAULTS (for laptops ect.)"
+set /P PowerThrottlingchoice=[Y/N]:
 if /I "%PowerThrottlingchoice%"=="Y" goto noPowerThrottling
 if /I "%PowerThrottlingchoice%"=="N" goto yesPowerThrottling
 goto invalidchoice
@@ -271,7 +293,6 @@ goto RTR
 :invalidchoice
 echo "INVALID COMMAND RUN BAT AGAIN"
 powershell -c "(New-Object Media.SoundPlayer 'C:\Windows\Media\Windows User Account Control.wav').PlaySync()"
-endlocal
 exit /b
 
 goto RTR
@@ -288,6 +309,7 @@ for %%A in (. . .) do (
 echo.
 
 echo "CUSTOM WINDOWS UPDATES SETTINGS" >> "%log%"
+:: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v "DisableOSUpgrade" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v "DODownloadMode" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v "SystemSettingsDownloadMode" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Device Metadata" /v "PreventDeviceMetadataFromNetwork" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
@@ -379,7 +401,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnW
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SstpSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD-PARTY) DEFAULT 2" >> "%log%"
+echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD PARTY) DEFAULT 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 
 echo "MOUSE STUFF POINTER SPEED DEFAULT 10(registry/SystemSettings) 6/11(slider/main.cpl)" >> "%log%"
@@ -399,7 +421,7 @@ reg add "HKCU\Control Panel\Mouse" /v "MouseThreshold2" /t REG_SZ /d 0 /f >>"%lo
 echo "HIDE SETTINGS PAGES DELETE RESTORES DEFAULT" >> "%log%"
 :: reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "SettingsPageVisibility" /t REG_SZ /d "hide:home" /f >>"%log%" 2>&1
 reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "SettingsPageVisibility" /f >>"%log%" 2>&1
-"this is fine (ERROR: The system was unable to find the specified registry key or value.)" 
+echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
 echo "CHECK YOUR CURRENT TIMER RESOLUTION (Get-Process | Where-Object { $_.Name -eq "System" } | Measure-Command { })" >> "%log%"
 echo "TIMER RESOLUTION (10000×100ns = 1,000,000ns = 1 millisecond)" >> "%log%"
@@ -428,9 +450,9 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProf
 echo "BOOSTS/QUANTUM DEFAULT IS BALANCE/SAFER=26 (2:1/SHORT) EVEN/RESPONSIVE/SMOOTH=2 (1:1/SHORT) GAME ONLY/LEAST BACKGROUND=38 (3:1/SHORT)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 26 /f >>"%log%" 2>&1
 
-echo "BORDERLESS FULLSCREEN: ALWAYS COMPOSITED BY DWM, SIMPLEST AND MOST STABLE BUT LESS EFFICIENT THAN FO/EFSE." >> "%log%"
+echo "BORDERLESS FULLSCREEN: ALWAYS COMPOSITED BY DWM, SIMPLEST AND MOST STABLE BUT LESS EFFICIENT THAN FO/EFSE" >> "%log%"
 echo "FULLSCREEN EXCLUSIVE (FSE): BYPASSES DWM FOR LOWEST LATENCY/BEST PERFORMANCE, BUT ALT‑TABBING IS SLOW/FLICKERY; FORCE IT BY CHECKING DISABLE FULLSCREEN OPTIMIZATIONS IN GAMES.EXE OR DSEBEHAVIOR=2" >> "%log%"
-echo "FULLSCREEN OPTIMIZATIONS (FO/EFSE): USES FLIP-MODEL PRESENTATION THROUGH DWM FOR NEAR‑FSE PERFORMANCE WITH INSTANT ALT‑TAB AND WORKING OVERLAYS/NOTIFICATIONS." >> "%log%"
+echo "FULLSCREEN OPTIMIZATIONS (FO/EFSE): USES FLIP MODEL PRESENTATION THROUGH DWM FOR NEAR‑FSE PERFORMANCE WITH INSTANT ALT TAB AND WORKING OVERLAYS/NOTIFICATIONS" >> "%log%"
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DSEBehavior" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DXGIHonorFSEWindowsCompatible" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_EFSEFeatureFlags" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
@@ -459,14 +481,14 @@ reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "GamePanelStartupTipIndex" /t REG_D
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "ShowStartupPanel" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "UseNexusForGameBarEnabled" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
-echo "SYSTEM MEDIA CONTROLS (NOW PLAYING SESSION MANAGER) default is 3" >> "%log%"
+echo "SYSTEM MEDIA CONTROLS (NOW PLAYING SESSION MANAGER) DEFAULT IS 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 
-echo "THIS PREVENTS WINDOWS FROM AUTO-ASSIGNING MUSIC/PICTURES/VIDEOS TEMPLATES BASED ON CONTENT AND UNDO REG DELETE" >> "%log%"
+echo "THIS PREVENTS WINDOWS FROM AUTO ASSIGNING MUSIC/PICTURES/VIDEOS TEMPLATES BASED ON CONTENT AND UNDO REG DELETE" >> "%log%"
 reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /t REG_SZ /d NotSpecified /f >>"%log%" 2>&1
 :: reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v FolderType /f >>"%log%" 2>&1
 
-echo "WINHTTP WEB PROXY AUTO-DISCOVERY SERVICE (WPAD) PROTOCOL CHECK WITH (NETSH WINHTTP SHOW PROXY) (DISABLEWPAD DEFAULT DELETE)" >> "%log%"
+echo "WINHTTP WEB PROXY AUTO DISCOVERY SERVICE (WPAD) PROTOCOL CHECK WITH (NETSH WINHTTP SHOW PROXY) (DISABLEWPAD DEFAULT DELETE)" >> "%log%"
 :: reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" /v "AutoDetect" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DisableWpad" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 :: reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp" /v "DisableWpad" /f >>"%log%" 2>&1
@@ -516,6 +538,10 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v "Ena
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost" /v "EnableWebContentEvaluation" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" /v "DisabledByGroupPolicy" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
+echo "PCHEALTHCHECK STUFF" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\PCHC" /v "PreviousUninstall" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\PCHealthCheck" /v "installed" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+
 echo "SENSORS STUFF" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{09485F5A-759E-4A45-B622-5C7F2FCE985E}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{5C5C4656-0E77-4F44-BF4C-8C0C8A76E8A7}" /v "SensorPermissionState" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
@@ -556,7 +582,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\FDResPub" /v "Start" /t REG_DWOR
 :: sc triggerinfo FDResPub starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 
-echo "WIRELESS RADIO SIGNALS TOGGLE FOR WI-FI/BLUETOOTH/CELLULAR/AIRPLANE MODE" >> "%log%"
+echo "WIRELESS RADIO SIGNALS TOGGLE FOR WIFI/BLUETOOTH/CELLULAR/AIRPLANE MODE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RmSvc" /v "Start" /t REG_DWORD /d 3 /f >>"%log%" 2>&1
 sc triggerinfo RmSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 
@@ -998,6 +1024,8 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "DisableTel
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "DoNotShowFeedbackNotifications" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v "MaxTelemetryAllowed" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Reporting" /v "Disabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener" /v "Start" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Start" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\Windows Reporting\QueueReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
@@ -1015,12 +1043,14 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v "Hibern
 echo "CLEAR VIRTUAL MEMORY FOR SECURITY (SLOWS DOWN SHUTDOWN TIME)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "ClearPageFileAtShutdown" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
-echo "HKLM CONTROL" >> "%log%"
+echo "SECURITY & CERTIFICATE POLICY" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v "VerifiedAndReputablePolicyState" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+
+echo "FILESYSTEM BEHAVIOR" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+
+echo "DEFAULT CPU PRIORITY CONTROL" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "IRQ8Priority" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener" /v "Start" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Start" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
 
 echo "MAPS STUFF" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MapsBroker" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
@@ -1036,7 +1066,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\cloudidsvc" /v "Start" /t REG_DW
 echo "MICROSOFT CLOUD BACKUP SERVICE/CLOUD RESET DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CloudBackupRestoreSvc" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 
-echo "OEM UTILITIES,LMS,AMT,ME FIRMWARE,MEIX64 (Intel ME sensors/WMI-based ME data)" >> "%log%"
+echo "OEM UTILITIES,LMS,AMT,ME FIRMWARE,MEIX64 (Intel ME sensors/WMI based ME data)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MEIx64" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
 :: sc triggerinfo WMIRegistrationService starttype= all 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
@@ -1081,16 +1111,25 @@ reg delete "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\
 echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
 echo "EDGE STUFF MICROSOFTEDGEUPDATETASKMACHINE DISABLED" >> "%log%"
-for /f "tokens=2 delims=:" %%T in ('schtasks /query /fo LIST /v ^| findstr /i "TaskName:" ^| findstr /i "MicrosoftEdgeUpdateTaskMachine"') do (
+for /f "tokens=2 delims=:" %%T in (
+    'schtasks /query /fo LIST /v ^| findstr /i "TaskName:" ^| findstr /i "MicrosoftEdgeUpdateTaskMachine"'
+) do (
     set "raw=%%T"
     set "task=!raw:~1!"
     set "task=!task: =!"
-    schtasks /change /tn "!task!" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
+    echo Found task: !task! >> "%log%"
+    schtasks /change /tn "!task!" /disable >> "%log%" 2>&1
 )
 
 echo "EDGE STUFF DELETE EDGE ACTIVE SETUP STUBPATH" >> "%log%"
-for /f "tokens=*" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Active Setup\Installed Components"') do (
-    for /f "tokens=2,*" %%b in ('reg query "%%a" /v StubPath 2^>nul ^| find /i "StubPath" ^| find /i "edge"') do (
+for /f "tokens=*" %%a in (
+    'reg query "HKLM\SOFTWARE\Microsoft\Active Setup\Installed Components" 2^>nul'
+) do (
+    echo PROCESSING %%a >> "%log%"
+    for /f "tokens=2,*" %%b in (
+        'reg query "%%a" /v StubPath 2^>nul ^| find /i "StubPath" ^| find /i "edge"'
+    ) do (
+        echo FOUND STUBPATH IN %%a >> "%log%"
         reg delete "%%a" /v "StubPath" /f >>"%log%" 2>&1
     )
 )
@@ -1100,45 +1139,48 @@ for /f "tokens=*" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Active Setup\Insta
 :: netsh winsock reset
 :: netsh int tcp reset
 
-echo "SECURE, INTENDED BEHAVIOR (TO NOT BE SET TO 1)" >> "%log%"
-reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v "DoNotUseNLA" /f >>"%log%" 2>&1
-echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
+:: echo "DEFAULT SECURE/INTENDED BEHAVIOR (TO NOT BE SET TO 1)" >> "%log%"
+:: reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v "DoNotUseNLA" /f >>"%log%" 2>&1
+:: echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
+
+:: echo "STRICT PARSING" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Http\Parameters" /v "HttpAllowLenientChunkExtParsing" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
 :: echo "FOR MESSAGE QUEUING (MSMQ) (OPTIONAL FEATURE) (ENABLE-WINDOWSOPTIONALFEATURE -ONLINE -FEATURENAME MSMQ-SERVER -ALL)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\MSMQ\Parameters" /v "TCPNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 
-echo "VARIOUS NETWORK DEFAULTS" >> "%log%"
-netsh int tcp set supplemental internet congestionprovider=default >>"%log%" 2>&1
-netsh interface ipv4 set subinterface "Ethernet" mtu=1500 store=persistent >>"%log%" 2>&1
-netsh interface ipv6 set subinterface "Ethernet" mtu=1500 store=persistent >>"%log%" 2>&1
-echo "this is fine (Element not found.)" >> "%log%"
-powershell -NoProfile -Command "Enable-NetAdapterChecksumOffload -Name * -ErrorAction SilentlyContinue" >>"%log%" 2>&1
-powershell -NoProfile -Command "Enable-NetAdapterLso -Name * -ErrorAction SilentlyContinue" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -Chimney disabled" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSideScaling enabled" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -AutoTuningLevelLocal normal" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -EcnCapability disabled" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -InitialRto 3000" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -MaxSynRetransmissions 4" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -MinRto 300" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -NonSackRttResiliency enabled" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -ScalingHeuristics enabled" >>"%log%" 2>&1
-powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -Timestamps enabled" >>"%log%" 2>&1
+:: echo "VARIOUS NETWORK DEFAULTS" >> "%log%"
+:: netsh int tcp set supplemental internet congestionprovider=default >>"%log%" 2>&1
+:: netsh interface ipv4 set subinterface "Ethernet" mtu=1500 store=persistent >>"%log%" 2>&1
+:: netsh interface ipv6 set subinterface "Ethernet" mtu=1500 store=persistent >>"%log%" 2>&1
+:: echo "this is fine (Element not found.)" >> "%log%"
+:: powershell -NoProfile -Command "Enable-NetAdapterChecksumOffload -Name * -ErrorAction SilentlyContinue" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Enable-NetAdapterLso -Name * -ErrorAction SilentlyContinue" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -Chimney disabled" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSideScaling enabled" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -AutoTuningLevelLocal normal" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -EcnCapability disabled" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -InitialRto 3000" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -MaxSynRetransmissions 4" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -MinRto 300" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -NonSackRttResiliency enabled" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -ScalingHeuristics enabled" >>"%log%" 2>&1
+:: powershell -NoProfile -Command "Set-NetTCPSetting -SettingName internet -Timestamps enabled" >>"%log%" 2>&1
 
-echo "VARIOUS NETWORK DEFAULTS LEGACY/LOW IMPACT" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "explorer.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "iexplore.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPERSERVER" /v "explorer.exe" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPERSERVER" /v "iexplore.exe" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "LargeSystemCache" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "Size" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "DefaultTTL" /t REG_DWORD /d 128 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "MaxUserPort" /t REG_DWORD /d 5000 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "Tcp1323Opts" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "DnsPriority" /t REG_DWORD /d 2000 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "HostsPriority" /t REG_DWORD /d 500 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "LocalPriority" /t REG_DWORD /d 499 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "NetbtPriority" /t REG_DWORD /d 2001 /f >>"%log%" 2>&1
+:: echo "VARIOUS NETWORK DEFAULTS LEGACY/LOW IMPACT" >> "%log%"
+:: reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "explorer.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPER1_0SERVER" /v "iexplore.exe" /t REG_DWORD /d 4 /f >>"%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPERSERVER" /v "explorer.exe" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl\FEATURE_MAXCONNECTIONSPERSERVER" /v "iexplore.exe" /t REG_DWORD /d 6 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v "LargeSystemCache" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v "Size" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "DefaultTTL" /t REG_DWORD /d 128 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "MaxUserPort" /t REG_DWORD /d 5000 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "Tcp1323Opts" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "DnsPriority" /t REG_DWORD /d 2000 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "HostsPriority" /t REG_DWORD /d 500 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "LocalPriority" /t REG_DWORD /d 499 /f >>"%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider" /v "NetbtPriority" /t REG_DWORD /d 2001 /f >>"%log%" 2>&1
 
 echo "-RECEIVESEGMENTCOALESCING DISABLED ✅ CAN LOWER LATENCY JITTER ⚠️ MAY REDUCE THROUGHPUT ON HEAVY TRANSFERS" >> "%log%"
 powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing disabled" >>"%log%" 2>&1
@@ -1151,60 +1193,55 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProf
 
 echo "VARIOUS NETWORK TWEAKS" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 10 /f >>"%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 30 /f >>"%log%" 2>&1
-
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 10 /f >>"%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 60 /f >>"%log%" 2>&1
 :: echo "VARIOUS NETWORK TWEAKS DEFAULTS" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Psched" /v "NonBestEffortLimit" /t REG_DWORD /d 20 /f >>"%log%" 2>&1
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWaitDelay" /t REG_DWORD /d 120 /f >>"%log%" 2>&1
 
 echo "TCPIP TWEAKS" >> "%log%"
-echo "TCPACKFREQUENCY=1 ✅ LOWERS LATENCY IN SOME GAMES. ⚠️ ADDS OVERHEAD AND CAN REDUCE THROUGHPUT." >> "%log%"
-echo "TCPNODELAY=1 ✅ IMPROVES RESPONSIVENESS FOR LATENCY-SENSITIVE APPS. ⚠️ WASTES BANDWIDTH WITH MANY SMALL PACKETS." >> "%log%"
+echo "TCPACKFREQUENCY=1 ✅ LOWERS LATENCY IN SOME GAMES. ⚠️ ADDS OVERHEAD AND CAN REDUCE THROUGHPUT" >> "%log%"
+echo "TCPNODELAY=1 ✅ IMPROVES RESPONSIVENESS FOR LATENCY SENSITIVE APPS. ⚠️ WASTES BANDWIDTH WITH MANY SMALL PACKETS" >> "%log%"
 for /f %%G in ('powershell -NoProfile -Command "Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | ForEach-Object {$_.InterfaceGuid}"') do (
     set "guid=%%G"
     call :applytweaks
 )
 goto :continue
 :applytweaks
-setlocal
-set "guid=%guid: =%"
+set "guid=!guid: =!"
 if not defined guid (
-    endlocal
     goto :TT
 )
-set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%guid%"
+echo APPLYING TCPIP TWEAKS TO !guid! >> "%log%"
+set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\!guid!"
 reg add "%regpath%" /v "TcpAckFrequency" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg add "%regpath%" /v "TcpNoDelay" /t REG_DWORD /d 1 /f >>"%log%" 2>&1
 reg delete "%regpath%" /v "DisableTaskOffload" /f >>"%log%" 2>&1
 reg delete "%regpath%" /v "Tcp1323Opts" /f >>"%log%" 2>&1
 reg delete "%regpath%" /v "TcpDelAckTicks" /f >>"%log%" 2>&1
-endlocal
 goto :TT
 :TT
 echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
 
 :: echo "TCPIP TWEAKS DEFAULT" >> "%log%"
-:: for /f "tokens=2 delims== " %%G in ('wmic nic where "NetEnabled=true" get GUID /value ^| find "="') do (
+:: for /f %%G in ('powershell -NoProfile -Command "Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | ForEach-Object {$_.InterfaceGuid}"') do (
 ::     set "guid=%%G"
-::     call :resettweaks
+::     call :applytweaks
 :: )
 :: goto :continue
-:: :resettweaks
-:: setlocal
-:: set "guid=%guid: =%"
+:: :applytweaks
+:: set "guid=!guid: =!"
 :: if not defined guid (
-::     endlocal
 ::     goto :TTD
 :: )
-:: set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%guid%"
+:: echo APPLYING TCPIP TWEAKS TO !guid! >> "%log%"
+:: set "regpath=HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\!guid!"
 :: reg delete "%regpath%" /v "DisableTaskOffload" /f >>"%log%" 2>&1
 :: reg delete "%regpath%" /v "Tcp1323Opts" /f >>"%log%" 2>&1
 :: reg delete "%regpath%" /v "TcpAckFrequency" /f >>"%log%" 2>&1
 :: reg delete "%regpath%" /v "TcpDelAckTicks" /f >>"%log%" 2>&1
 :: reg delete "%regpath%" /v "TcpNoDelay" /f >>"%log%" 2>&1
-:: endlocal
 :: goto :TTD
 :: :TTD
 :: echo "this is fine (ERROR: The system was unable to find the specified registry key or value.)" >> "%log%"
@@ -1256,7 +1293,7 @@ schtasks /change /tn "\Microsoft\Windows\WaaSMedic\MaintenanceWork" /disable 2>&
 schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 echo "this is fine (ERROR: The specified task name "" does not exist in the system.)" >> "%log%"
-:: echo "SCHTASKS CANNOT DISABLE" >> "%log%"
+:: echo SCHTASKS CANNOT DISABLE >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Shell\UpdateUserPictureTask" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 :: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Report policies" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
 :: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task" /disable 2>&1 | findstr /I "ERROR FAILED" >>"%log%"
@@ -1289,7 +1326,6 @@ echo "Run after updates/repairs and REBOOT* now"
 powershell -c "(New-Object Media.SoundPlayer 'C:\Windows\Media\tada.wav').PlaySync()"
 :: RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters
 :: taskkill /f /im explorer.exe && start explorer.exe
-
 endlocal
 pause >nul
 ```
