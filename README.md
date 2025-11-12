@@ -300,7 +300,7 @@ goto RTR
 
 echo "STANDBY" >> "%log%"
 for /f %%A in ('"prompt $H & for %%B in (1) do rem"') do set "BS=%%A"
-<nul set /p "=standby %username%"
+<nul set /p "=STANDBY %username%"
 for %%A in (. . .) do (
     <nul set /p "=%%A"
     timeout /nobreak /t 1 >nul
