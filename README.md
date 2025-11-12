@@ -486,7 +486,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD
 
 echo "THIS PREVENTS WINDOWS FROM AUTO ASSIGNING MUSIC/PICTURES/VIDEOS TEMPLATES BASED ON CONTENT AND UNDO REG DELETE" >> "%log%"
 reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /t REG_SZ /d NotSpecified /f >>"%log%" 2>&1
-:: reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v FolderType /f >>"%log%" 2>&1
+:: reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /f >>"%log%" 2>&1
 
 echo "WINHTTP WEB PROXY AUTO DISCOVERY SERVICE (WPAD) PROTOCOL CHECK WITH (NETSH WINHTTP SHOW PROXY) (DISABLEWPAD DEFAULT DELETE)" >> "%log%"
 :: reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings" /v "AutoDetect" /t REG_DWORD /d 0 /f >>"%log%" 2>&1
