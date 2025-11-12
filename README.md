@@ -1184,7 +1184,6 @@ for /f "tokens=*" %%a in (
 
 echo "-RECEIVESEGMENTCOALESCING DISABLED ✅ CAN LOWER LATENCY JITTER ⚠️ MAY REDUCE THROUGHPUT ON HEAVY TRANSFERS" >> "%log%"
 powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing disabled" >>"%log%" 2>&1
-
 :: echo "-RECEIVESEGMENTCOALESCING DEFAULT" >> "%log%"
 :: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -ReceiveSegmentCoalescing enabled" >>"%log%" 2>&1
 
