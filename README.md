@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.9.5
+# Registry-Tweaks-Refresh.bat v0.9.6
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it and force the CHANGE* regs in log and skim through for info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -695,10 +695,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" 
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WinDefend starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Verification" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Verification" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "VARIOUS DISABLED SERVICES" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BcastDVRUserService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -730,8 +730,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\UevAgentService" /v "Start" /t R
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WManSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo "THE MICROSOFT ACCOUNT SIGN IN ASSISTANT SERVICE" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+echo "THE MICROSOFT ACCOUNT SIGN IN ASSISTANT SERVICE DEFAULT 3" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo wlidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "VARIOUS SERVICES SET CORRECTLY" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
