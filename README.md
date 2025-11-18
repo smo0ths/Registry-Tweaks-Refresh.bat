@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.9.7
+# Registry-Tweaks-Refresh.bat v0.9.8
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it and force the CHANGE* regs in log and skim through for info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -19,6 +19,8 @@ color 0A
 :: echo "ENVIRONMENT"
 setlocal EnableDelayedExpansion
 set "log=%userprofile%\desktop\registry-tweaks-refresh.txt"
+
+:: echo "REG_DWORD VALUES 0=BOOT 1=SYSTEM 2=AUTOMATIC 3=MANUAL 4=DISABLED"
 
 :restorechoice
 echo "Y OPENS SYSTEM PROPERTIES SO YOU CAN CREATE A RESTORE POINT, N SKIPS"
@@ -645,10 +647,8 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_
 echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Features" /v "TamperProtection" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Sense" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo Sense starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo webthreatdefusersvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DpaDisabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -682,28 +682,55 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "EnableSmartScreenF
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "PublishUserActivities" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "UploadUserActivities" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer" /v "SmartScreenEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "MORE MSEC STUFF" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo SecurityHealthService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+echo "MSEC SERVICES" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 3) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WbioSrvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Sense" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo Sense starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: echo "MSEC SERVICES DEFAULTS" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "DelayedAutoStart" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 2) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 2) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo WbioSrvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Sense" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo Sense starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+:: echo "MSEC HARDCORE SERVICES" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d ? /f >> "%log%" 2>&1
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD ?) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d ? /f >> "%log%" 2>&1
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD ?) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d ? /f >> "%log%" 2>&1
+:: sc triggerinfo WdNisDrv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD ?) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d ? /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo webthreatdefsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo WinDefend starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD ?) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d ? /f >> "%log%" 2>&1
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD ?) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "MSEC HARDCORE SERVICES DEFAULTS" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo WdNisDrv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 3) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo WdNisSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 3) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 2) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 
 echo "VARIOUS DISABLED SERVICES" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BcastDVRUserService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
