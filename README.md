@@ -55,8 +55,8 @@ schtasks /change /tn "\Microsoft\Windows\Hotpatch\Monitoring" /disable 2>&1 | fi
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 goto AUTODRIVchoice
 
 :enableupdates
