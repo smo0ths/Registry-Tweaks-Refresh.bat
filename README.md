@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.9.8
+# Registry-Tweaks-Refresh.bat v0.9.9
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it and force the CHANGE* regs in log and skim through for info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -53,6 +53,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 goto AUTODRIVchoice
 
@@ -63,6 +64,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t RE
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo UsoSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo wuauserv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 goto AUTODRIVchoice
@@ -481,6 +483,9 @@ reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "UseNexusForGameBarEnabled" /t REG_
 echo "SYSTEM MEDIA CONTROLS (NOW PLAYING SESSION MANAGER) DEFAULT IS 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NPSMSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
+echo "SMS ROUTER SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SmsRouter" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
 echo "THIS PREVENTS WINDOWS FROM AUTO ASSIGNING MUSIC/PICTURES/VIDEOS TEMPLATES BASED ON CONTENT AND UNDO REG DELETE" >> "%log%"
 reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /t REG_SZ /d NotSpecified /f >> "%log%" 2>&1
 :: reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /f >> "%log%" 2>&1
@@ -600,7 +605,11 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd" /v "fD
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd" /v "StartupPrograms" /t REG_SZ /d "" /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteRegistry" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\TermService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "OPTIMIZE DRIVES DEFAULT 3" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\defragsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
 echo "LIMITED USER ACCOUNT FILE VIRTUALIZATION DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\luafv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -643,8 +652,10 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpywa
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "mpcmdrun.exe will flip this" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "mpcmdrun.exe will flip this" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Features" /v "TamperProtection" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DpaDisabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -716,8 +727,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" 
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d ? /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD ?) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d ? /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD ?) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
 :: echo "MSEC HARDCORE SERVICES DEFAULTS" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 :: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
@@ -910,6 +921,8 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "EnableDyna
 echo "DISABLE WINDOWS FEEDBACK NOTIFICATIONS (SYSTEM INITIATED USER FEEDBACK/SIUF/TELEMETRY/CEP)" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Siuf\Rules" /v "NumberOfSIUFInPeriod" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Siuf\Rules" /v "PeriodInNanoSeconds" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+schtasks /change /tn "\Microsoft\Windows\Feedback\Siuf\DmClient" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "DISABLE LOCATION ACCESS PROMPTS" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v "Value" /t REG_SZ /d Deny /f >> "%log%" 2>&1
@@ -1304,7 +1317,19 @@ schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program
 schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Device Information\Device" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\OneSettings\RefreshCache" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyMonitor" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReceiver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\BootstrapUsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\GovernedFeatureUsageProcessing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\WindowsAI\Recall\InitialConfiguration" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Defrag\ScheduledDefrag" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\DiskCleanup\SilentCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticResolver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Application Experience\PcaPatchDbTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Application Experience\StartupAppTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -1320,7 +1345,6 @@ schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /
 :: schtasks /change /tn "\Microsoft\Windows\Diagnosis\Scheduled" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\DiskFootprint\Diagnostics" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Maintenance\WinSAT" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\NetworkDiagnostics\BfeOnServiceStartTypeChange" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -1332,8 +1356,6 @@ schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /
 :: schtasks /change /tn "\Microsoft\Windows\Printing\PrinterCleanupTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Printing\PrintJobCleanupTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Servicing\StartComponentCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyMonitor" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Shell\IndexerAutomaticMaintenance" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Shell\NotificationTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: schtasks /change /tn "\Microsoft\Windows\Shell\ThemesSyncedImageDownload" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
