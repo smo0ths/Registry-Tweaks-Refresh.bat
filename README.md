@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v0.9.9
+# Registry-Tweaks-Refresh.bat v1.0.0
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it and force the CHANGE* regs in log and skim through for info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -50,16 +50,21 @@ goto invalidchoice
 :disableupdates
 echo "DISABLING WINDOWS UPDATES" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\hpatchmon" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+schtasks /change /tn "\Microsoft\Windows\Hotpatch\Monitoring" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 goto AUTODRIVchoice
 
 :enableupdates
 echo "ENABLING WINDOWS UPDATES" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\hpatchmon" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo hpatchmon starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Hotpatch\Monitoring" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo UsoSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
