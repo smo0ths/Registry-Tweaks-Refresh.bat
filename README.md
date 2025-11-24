@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.0.2
+# Registry-Tweaks-Refresh.bat v1.0.3
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it in safe mode* and force the CHANGE* regs in log and skim through for info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -620,8 +620,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteRegistry" /v "Start" /t RE
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TermService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
-echo "OPTIMIZE DRIVES DEFAULT 3" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\defragsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+echo "OPTIMIZE DRIVES" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\defragsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+schtasks /change /tn "\Microsoft\Windows\Defrag\ScheduledDefrag" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Storage Tiers Management\Storage Tiers Optimization" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "LIMITED USER ACCOUNT FILE VIRTUALIZATION DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\luafv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -1361,7 +1363,6 @@ schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushi
 schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\BootstrapUsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\GovernedFeatureUsageProcessing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WindowsAI\Recall\InitialConfiguration" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Defrag\ScheduledDefrag" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\DiskCleanup\SilentCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticResolver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
