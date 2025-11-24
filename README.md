@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.0.3
+# Registry-Tweaks-Refresh.bat v1.0.4
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file and run it in safe mode* and force the CHANGE* regs in log and skim through for info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -338,9 +338,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUSer
 echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD PARTY) DEFAULT 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
-echo "MSISERVER (APPLICATION INSTALLATION/MAINTENANCE)" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-
 echo "SETTINGS > PRIVACY & SECURITY > APP PERMISSIONS (0=TOGGLE 1=FORCE ALLOW 2=FORCE DENY FOR LETAPPSACCESS)" >> "%log%"
 echo "LOCATION" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "DisableLocation" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -479,6 +476,9 @@ echo "GAMEDVR OFF KEYS" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AllowGameDVR" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v "AllowGameDVR" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+echo "BROADCAST DVR (GAMEDVR/XBOX RECORDING)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BcastDVRUserService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo BcastDVRUserService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "GAME MODE LEAVE ON UNLESS YOU THINK ITS BREAKING SOMETHING" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AllowAutoGameMode" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -514,6 +514,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinHttpAutoProxySvc" /v "Start" 
 :: reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" /v "AutoConnectAllowedOEM" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 :: schtasks /change /tn "\Microsoft\Windows\WiFi\WiFiTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "REMOTE DCOM ACTIVATION IS DISABLED (NO CROSS MACHINE COM CALLS)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Ole" /v "EnableDCOM" /t REG_SZ /d "N" /f >> "%log%" 2>&1
@@ -535,11 +536,13 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD 
 
 echo "ENABLING LOCAL TROUBLESHOOTING/DIAGNOSTICS/HEALTH MONITORING (AUTOMATED TROUBLESHOOTING/ERROR REPORTS)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-echo "this is fine HKLM\SYSTEM\CurrentControlSet\Services\DPS (set REG_DWORD 2) (should be default)" >> "%log%"
+echo "HKLM\SYSTEM\CurrentControlSet\Services\DPS default 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-echo "this is fine HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost (set REG_DWORD 3) (should be default)" >> "%log%"
+echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost default 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-echo "this is fine HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost (set REG_DWORD 3) (should be default)" >> "%log%"
+echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost default 3" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo whesvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 :: echo "WHEA LOGGER" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -640,7 +643,9 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\CDPUserSvc" /v "Start" /t REG_DW
 sc triggerinfo CDPUserSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ClipSVC" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo ClipSVC starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "this is fine (is triggered, Access denied, [SC] OpenService FAILED 5:)" >> "%log%"
+echo "[SC] OpenService FAILED 5 (starttype Access is denied)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo InstallService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcbService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo NcbService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\OneSyncSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
@@ -649,17 +654,24 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\StateRepository" /v "Start" /t R
 sc triggerinfo StateRepository starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TimeBrokerSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo TimeBrokerSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "this is fine (is triggered, Access denied, [SC] OpenService FAILED 5:)" >> "%log%"
+echo "[SC] OpenService FAILED 5 (starttype Access is denied)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TokenBroker" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo TokenBroker starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-echo "this is fine HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller (set REG_DWORD 3) (should be default)" >> "%log%"
+echo "HKLM\SYSTEM\CurrentControlSet\Services\TrustedInstaller default 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UdkUserSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo UdkUserSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UnistoreSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo UnistoreSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UserDataSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo UserDataSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+schtasks /change /tn "\Microsoft\Windows\Clip\License Validation" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Shell\IndexerAutomaticMaintenance" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Shell\ThemesSyncedImageDownload" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Subscription\LicenseAcquisition" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "MSEC STUFF DISABLED" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Browser\AllowSmartScreen" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -700,36 +712,34 @@ echo "MSEC SERVICES 1 DISABLED" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-echo "mpcmdrun.exe will flip this" >> "%log%"
+echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
-echo "mpcmdrun.exe will flip this" >> "%log%"
+echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Features" /v "TamperProtection" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 0)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DpaDisabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 1)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DisableRealtimeMonitoring REG_DWORD to 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DisableRealtimeMonitoring REG_DWORD to 1)" >> "%log%"
 echo "DisableRealtimeMonitoring only works when windows defender is on and change in windows security app" >> "%log%"
 
 :: echo "MSEC SERVICES 1 DEFAULTS" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 0)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 0)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Features" /v "TamperProtection" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 1) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 1)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DpaDisabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 0)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DisableRealtimeMonitoring REG_DWORD to 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DisableRealtimeMonitoring REG_DWORD to 0)" >> "%log%"
 
 echo "MSEC SERVICES 2 DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 3) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 3)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WbioSrvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -740,7 +750,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" 
 :: echo "MSEC SERVICES 2 DEFAULTS" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "DelayedAutoStart" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 2) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 2)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo WbioSrvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -750,103 +760,161 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" 
 
 echo "MSEC HARDCORE SERVICES DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisDrv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 4) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 4)" >> "%log%"
 
 :: echo "MSEC HARDCORE SERVICES DEFAULTS" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 2) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 2)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 0)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 0) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 0)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisDrv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 3) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 3)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 3) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 3)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 2) (REQUIRES FULL OWNERSHIP/CONTROL)" >> "%log%"
+:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 2)" >> "%log%"
 
-echo "VARIOUS DISABLED SERVICES" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\BcastDVRUserService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo BcastDVRUserService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+echo "THE MICROSOFT ACCOUNT SIGN IN ASSISTANT SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo wlidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "TCP/IP NETBIOS HELPER" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo lmhosts starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "WINDOWS NETWORK DATA USAGE DRIVER" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Ndu" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+
+echo "QUALITY WINDOWS AUDIO VIDEO EXPERIENCE (QOS FOR MULTIMEDIA)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\QWAVE" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+
+echo "SCREEN CAPTURE SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CaptureService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo CaptureService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "CLIPBOARD HISTORY SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\cbdhsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo cbdhsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "DATA USAGE SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DusmSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo DusmSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "CAMERA STREAMING SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FrameServer" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo FrameServer starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "CAMERA MONITORING SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\FrameServerMonitor" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\jhi_service" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo "SMS/MESSAGING INTEGRATION SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MessagingService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo MessagingService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Ndu" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\P9RdrService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo "PHONE INTEGRATION SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PhoneSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo PhoneSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "CONTACT/CALENDAR INDEXING SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PimIndexMaintenanceSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo PimIndexMaintenanceSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\QWAVE" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo "PLAN9 FILE SYSTEM REDIRECTOR" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\P9RdrService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo "RETAIL DEMO MODE SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RetailDemo" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo "STILL IMAGE SERVICE (SCANNER/CAMERA)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StiSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo "USER EXPERIENCE VIRTUALIZATION AGENT" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UevAgentService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo UevAgentService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WManSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo "THE MICROSOFT ACCOUNT SIGN IN ASSISTANT SERVICE DEFAULT 3" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo wlidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-
-echo "VARIOUS SERVICES SET CORRECTLY" >> "%log%"
+echo "USER CONSENT UI SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\ConsentUxUserSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo ConsentUxUserSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "CRYPTOGRAPHIC SERVICES" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CryptSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "DelayedAutoStart" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+
+echo "TRUSTED PLATFORM MODULE PROVISIONING" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Intel(R) TPM Provisioning Service" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+
+echo "DISPLAY BROKER FOR DESKTOP" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "DelayedAutoStart" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+
+echo "DISPLAY COLOR/BRIGHTNESS ENHANCEMENTS" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+
+echo "WINDOWS EVENT LOG SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+
+echo "WINDOWS FONT CACHE SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+
+echo "WINDOWS INSTALLER SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-sc triggerinfo Netman starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-sc triggerinfo netprofm starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+sc triggerinfo msiserver starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "PROGRAM COMPATIBILITY ASSISTANT SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo PcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "NETWORK CONNECTIONS SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Netman" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo Netman starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "NETWORK LIST SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\netprofm" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo netprofm starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "PLUG AND PLAY SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PlugPlay" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo PlugPlay starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "STORAGE SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\StorSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo StorSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "TEXT INPUT FRAMEWORK NEVER DISABLE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TextInputManagementService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo TextInputManagementService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "this is fine (is triggered, Access denied, [SC] OpenService FAILED 5:)" >> "%log%"
+echo "[SC] OpenService FAILED 5 (starttype Access is denied)" >> "%log%"
+
+echo "DISTRIBUTED LINK TRACKING CLIENT" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-echo "this is fine HKLM\SYSTEM\CurrentControlSet\Services\TrkWks (set REG_DWORD 2) (should be default)" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NoSync /f >> "%log%" 2>&1
+echo "HKLM\SYSTEM\CurrentControlSet\Services\TrkWks default 2" >> "%log%"
+
+echo "WINDOWS MANAGEMENT INSTRUMENTATION" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Winmgmt" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+
+echo "WINDOWS SECURITY CENTER SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-echo "this is fine HKLM\SYSTEM\CurrentControlSet\Services\wscsvc (set REG_DWORD 2) (should be default)" >> "%log%"
+echo "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc default 2" >> "%log%"
+
+echo "WINDOWS TIME" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo W32Time starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NTP /f >> "%log%" 2>&1
 
 echo "XBOX STUFF (ONLY NEED XBOXGIP FOR CONTROLLER)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -1142,10 +1210,14 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\cloudidsvc" /v "Start" /t REG_DW
 echo "MICROSOFT CLOUD BACKUP SERVICE/CLOUD RESET DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\CloudBackupRestoreSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
-echo "OEM UTILITIES,LMS,AMT,ME FIRMWARE,MEIX64 (INTEL ME SENSORS/WMI BASED ME DATA)" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\MEIx64" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo WMIRegistrationService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+echo "OEM UTILITIES/LMS/AMT/ME/FIRMWARE/MEIX64/WMANSVC (INTEL ME SENSORS/WMI BASED ME DATA/BACKEND MANAGEMENT UTILITIES)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\jhi_service" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo jhi_service starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\MEIx64" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WManSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo WManSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WMIRegistrationService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo WMIRegistrationService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "DISABLE APPLE MOBILE DEVICE SERVICE STUFF" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Apple Mobile Device Service" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -1238,7 +1310,6 @@ reg add "HKLM\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Bro
 :: netsh int tcp set supplemental internet congestionprovider=default >> "%log%" 2>&1
 :: netsh interface ipv4 set subinterface "Ethernet" mtu=1500 store=persistent >> "%log%" 2>&1
 :: netsh interface ipv6 set subinterface "Ethernet" mtu=1500 store=persistent >> "%log%" 2>&1
-:: echo "this is fine (Element not found.)" >> "%log%"
 :: powershell -NoProfile -Command "Enable-NetAdapterChecksumOffload -Name * -ErrorAction SilentlyContinue" >> "%log%" 2>&1
 :: powershell -NoProfile -Command "Enable-NetAdapterLso -Name * -ErrorAction SilentlyContinue" >> "%log%" 2>&1
 :: powershell -NoProfile -Command "Set-NetOffloadGlobalSetting -Chimney disabled" >> "%log%" 2>&1
@@ -1347,76 +1418,60 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "TcpTimedWa
 ::         }
 ::     }
 
-echo "SCHTASKS" >> "%log%"
+echo "SCHTASKS DISABLE" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser Exp" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Application Experience\PcaPatchDbTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Application Experience\StartupAppTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\ApplicationData\DsSvcCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\CloudExperienceHost\CreateObjectTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\ConsentUX\UnifiedConsent\UnifiedConsentSyncTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\ConsentUX\UnifiedConsent\UnifiedConsentSyncTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Device Information\Device" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Diagnosis\Scheduled" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\DiskCleanup\SilentCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticResolver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\DiskFootprint\Diagnostics" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\BootstrapUsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\BootstrapUsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\GovernedFeatureUsageProcessing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReceiver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReceiver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\OneSettings\RefreshCache" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Maintenance\WinSAT" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\PI\Sqm-Tasks" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyMonitor" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReceiver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\BootstrapUsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\GovernedFeatureUsageProcessing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Sustainability\SustainabilityTelemetry" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\UsageAndQualityInsights\UsageAndQualityInsights-MaintenanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+echo "\Microsoft\Windows\UsageAndQualityInsights\UsageAndQualityInsights-MaintenanceTask Access is denied" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WindowsAI\Recall\InitialConfiguration" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\DiskCleanup\SilentCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticResolver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Application Experience\PcaPatchDbTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Application Experience\StartupAppTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\ApplicationData\DsSvcCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Autochk\Proxy" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Clip\License Validation" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\CloudExperienceHost\CreateObjectTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UnifiedConsentSyncTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UsageDataFlushing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UsageDataReceiver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Diagnosis\Scheduled" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\DiskFootprint\Diagnostics" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Maintenance\WinSAT" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\NetworkDiagnostics\BfeOnServiceStartTypeChange" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\NetworkDiagnostics\ResolutionHost" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\PI\Sqm-Tasks" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Power Efficiency Diagnostics\PowerGridForecastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Power Efficiency Diagnostics\SustainabilityTelemetry" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Printing\PrinterCleanupTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Printing\PrintJobCleanupTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Servicing\StartComponentCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Shell\IndexerAutomaticMaintenance" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Shell\NotificationTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Shell\ThemesSyncedImageDownload" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Subscription\EnableLicenseAcquisition" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Subscription\LicenseAcquisition" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Time Synchronization\ForceSynchronizeTime" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\TPM\Tpm-Maintenance" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UPnP\UPnPHostConfig" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\USB\Usb-Notifications" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\WaaSMedic\MaintenanceWork" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\WlanSvc\CDSSync" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo SCHTASKS CANNOT DISABLE >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\Shell\UpdateUserPictureTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Report policies" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Start Oobe Expedite Work" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScan_LicenseAccepted" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScanAfterUpdate" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UIEOrchestrator" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UUS Failover Task" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: schtasks /change /tn "\Microsoft\Windows\UsageAndQualityInsights\UsageAndQualityInsights-MaintenanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\WwanSvc\NotificationTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "SCHTASKS ENABLE" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Autochk\Proxy" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Printing\PrinterCleanupTask" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Printing\PrintJobCleanupTask" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Subscription\EnableLicenseAcquisition" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Time Synchronization\ForceSynchronizeTime" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\TPM\Tpm-Maintenance" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\UPnP\UPnPHostConfig" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\USB\Usb-Notifications" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\WDI\ResolutionHost" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Windows Filtering Platform\BfeOnServiceStartTypeChange" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 :: echo "UPDATE DELETES" >> "%log%"
 :: reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\ClipchampUpdate" /f >> "%log%" 2>&1
