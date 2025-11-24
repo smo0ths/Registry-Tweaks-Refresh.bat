@@ -1,6 +1,6 @@
 # Registry-Tweaks-Refresh.bat v1.0.4
 Windows 11 Registry Tweaks
-#### this is what i use, make the bat file and run it in safe mode* and force the CHANGE* regs in log and skim through for info
+#### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
 
 ```python
