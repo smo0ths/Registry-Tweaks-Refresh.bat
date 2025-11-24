@@ -542,7 +542,7 @@ echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost default 3" >> "%log%
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost default 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-:: sc triggerinfo whesvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+sc triggerinfo whesvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 :: echo "WHEA LOGGER" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -796,7 +796,7 @@ sc triggerinfo wlidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%
 
 echo "TCP/IP NETBIOS HELPER" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-:: sc triggerinfo lmhosts starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+sc triggerinfo lmhosts starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "WINDOWS NETWORK DATA USAGE DRIVER" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Ndu" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
