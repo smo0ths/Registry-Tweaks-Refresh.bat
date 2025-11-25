@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.0.4
+# Registry-Tweaks-Refresh.bat v1.0.5
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -56,6 +56,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD 
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop BITS 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 goto AUTODRIVchoice
 
 :enableupdates
@@ -162,9 +164,9 @@ goto invalidchoice
 echo "DISABLING NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-echo "CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced (set TaskbarDa REG_DWORD to 0)" >> "%log%"
+echo "---------> CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced (set TaskbarDa REG_DWORD to 0)" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-echo "CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds (set ShellFeedsTaskbarViewMode REG_DWORD to 2)" >> "%log%"
+echo "---------> CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds (set ShellFeedsTaskbarViewMode REG_DWORD to 2)" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsRunInBackground" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -176,9 +178,9 @@ goto touchchoice
 echo "ENABLING NOTIFICATIONS/WIDGETS/BACKGROUND APPS/ECT ON TASKBAR" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" /v "GlobalUserDisabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarDa" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced (set TaskbarDa REG_DWORD to 1)" >> "%log%"
+echo "---------> CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced (set TaskbarDa REG_DWORD to 1)" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v "ShellFeedsTaskbarViewMode" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds (set ShellFeedsTaskbarViewMode REG_DWORD to 1)" >> "%log%"
+echo "---------> CHANGE* HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds (set ShellFeedsTaskbarViewMode REG_DWORD to 1)" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows" /v "EnableFeeds" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsRunInBackground" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -712,34 +714,34 @@ echo "MSEC SERVICES 1 DISABLED" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1)" >> "%log%"
+echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 1)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1)" >> "%log%"
+echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 1)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Features" /v "TamperProtection" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 0)" >> "%log%"
+echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 0)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DpaDisabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 1)" >> "%log%"
+echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 1)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DisableRealtimeMonitoring REG_DWORD to 1)" >> "%log%"
+echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DisableRealtimeMonitoring REG_DWORD to 1)" >> "%log%"
 echo "DisableRealtimeMonitoring only works when windows defender is on and change in windows security app" >> "%log%"
 
 :: echo "MSEC SERVICES 1 DEFAULTS" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiSpyware" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 0)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiSpyware 0)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender" /v "DisableAntiVirus" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 0)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender (set REG_DWORD DisableAntiVirus 0)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Features" /v "TamperProtection" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 1)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Features (set REG_DWORD TamperProtection 1)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DpaDisabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 0)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DpaDisabled REG_DWORD to 0)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" /v "DisableRealtimeMonitoring" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DisableRealtimeMonitoring REG_DWORD to 0)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection (set DisableRealtimeMonitoring REG_DWORD to 0)" >> "%log%"
 
 echo "MSEC SERVICES 2 DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 3)" >> "%log%"
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 3)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WbioSrvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -750,7 +752,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" 
 :: echo "MSEC SERVICES 2 DEFAULTS" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService" /v "DelayedAutoStart" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 2)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\SecurityHealthService (set REG_DWORD 2)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WbioSrvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo WbioSrvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -760,35 +762,35 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\webthreatdefusersvc" /v "Start" 
 
 echo "MSEC HARDCORE SERVICES DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 4)" >> "%log%"
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 4)" >> "%log%"
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 4)" >> "%log%"
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisDrv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 4)" >> "%log%"
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 4)" >> "%log%"
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 4)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 4)" >> "%log%"
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 4)" >> "%log%"
 
 :: echo "MSEC HARDCORE SERVICES DEFAULTS" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 2)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\MDCoreSvc (set REG_DWORD 2)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdBoot" /v "Start" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 0)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdBoot (set REG_DWORD 0)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdFilter" /v "Start" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 0)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdFilter (set REG_DWORD 0)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisDrv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 3)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisDrv (set REG_DWORD 3)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo WdNisSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 3)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdNisSvc (set REG_DWORD 3)" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-:: echo "CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 2)" >> "%log%"
+:: echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 2)" >> "%log%"
 
 echo "THE MICROSOFT ACCOUNT SIGN IN ASSISTANT SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
@@ -1262,11 +1264,11 @@ reg add "HKLM\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Bro
 
 :: echo "EDGE STUFF MICROSOFTEDGEUPDATETASKMACHINE DISABLED" >> "%log%"
 :: for /f "tokens=2 delims=:" %%T in (
-::     'schtasks /query /fo LIST /v ^| findstr /i "TaskName:" ^| findstr /i "MicrosoftEdgeUpdateTaskMachine"'
+::     'schtasks /query /fo LIST ^| findstr /i "TaskName:" ^| findstr /i "MicrosoftEdgeUpdateTaskMachine"'
 :: ) do (
 ::     set "raw=%%T"
 ::     set "task=!raw:~1!"
-::     set "task=!task: =!"
+::     for /f "tokens=* delims= " %%A in ("!task!") do set "task=%%A"
 ::     echo Found task: !task! >> "%log%"
 ::     schtasks /change /tn "!task!" /disable >> "%log%" 2>&1
 :: )
@@ -1460,6 +1462,17 @@ schtasks /change /tn "\Microsoft\Windows\WindowsAI\Recall\InitialConfiguration" 
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\NotificationTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
+echo "SCHTASKS APPLICATION EXPERIENCE\MAREBACKUP 3X COMBO DISABLED" >> "%log%"
+for /f "tokens=2 delims=:" %%T in (
+    'schtasks /query /fo LIST ^| findstr /i "TaskName:" ^| findstr /i "MareBackup"'
+) do (
+    set "raw=%%T"
+    set "task=!raw:~1!"
+    for /f "tokens=* delims= " %%A in ("!task!") do set "task=%%A"
+    echo Found task: !task! >> "%log%"
+    schtasks /change /tn "!task!" /disable >> "%log%" 2>&1
+)
+
 echo "SCHTASKS ENABLE" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Autochk\Proxy" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -1483,8 +1496,8 @@ schtasks /change /tn "\Microsoft\Windows\Windows Filtering Platform\BfeOnService
 :: reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\WebView2RuntimeUpdate" /f >> "%log%" 2>&1
 
 :: cls
-echo "check log on desktop find CHANGE* keys and change them in RegCool.exe(or other) manually if you can" >> "%log%"
-echo "check log on desktop find CHANGE* keys and change them in RegCool.exe(or other) manually if you can"
+echo "check log on desktop find ---------> CHANGE* keys and change them in RegCool.exe(or other) manually if you can" >> "%log%"
+echo "check log on desktop find ---------> CHANGE* keys and change them in RegCool.exe(or other) manually if you can"
 echo "check echos for info remember reg changes are hardcore" >> "%log%"
 echo "check echos for info remember reg changes are hardcore"
 echo "REBOOT PC" >> "%log%"
