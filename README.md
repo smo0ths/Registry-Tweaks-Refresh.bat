@@ -58,6 +58,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 net stop BITS 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop InstallService 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop TrustedInstaller 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop wuauserv 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 goto AUTODRIVchoice
