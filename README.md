@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.0.5
+# Registry-Tweaks-Refresh.bat v1.0.6
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -538,15 +538,17 @@ echo "CRASH REPORTING BACKBONE OF WINDOWS DISABLED DEFAULT 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WerSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
-echo "ENABLING LOCAL TROUBLESHOOTING/DIAGNOSTICS/HEALTH MONITORING (AUTOMATED TROUBLESHOOTING/ERROR REPORTS)" >> "%log%"
+echo "ENABLING LOCAL TROUBLESHOOTING" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\DPS default 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost default 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost default 3" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-sc triggerinfo whesvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "WINDOWS HEALTH AND OPTIMIZED EXPERIENCES TELEMETRY" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo whesvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 :: echo "WHEA LOGGER" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
