@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.0.6
+# Registry-Tweaks-Refresh.bat v1.0.7
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -918,10 +918,22 @@ echo "WINDOWS SECURITY CENTER SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 echo "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc default 2" >> "%log%"
 
-echo "WINDOWS TIME" >> "%log%"
+echo "WINDOWS TIME FOR LOCAL CMOS CLOCK" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo W32Time starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NTP /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NoSync /f >> "%log%" 2>&1
+:: w32tm /config /syncfromflags:NO /update
+:: net stop W32Time && net start W32Time
+:: w32tm /resync /nowait
+:: w32tm /query /source
+:: echo "WINDOWS TIME FOR NTP" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo W32Time starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NTP /f >> "%log%" 2>&1
+:: w32tm /config /manualpeerlist:"time.windows.com,0x8" /syncfromflags:MANUAL /update
+:: net stop W32Time && net start W32Time
+:: w32tm /resync /nowait
+:: w32tm /query /source
 
 echo "XBOX STUFF (ONLY NEED XBOXGIP FOR CONTROLLER)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
