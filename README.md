@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.0.7
+# Registry-Tweaks-Refresh.bat v1.0.8
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -408,19 +408,22 @@ echo "PASSKEYS" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsAccessPasskeyAutofill" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsControlPasskeys" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 
-:: echo "VPN/IPSEC/IPV6 INFRASTRUCTURE STUFF" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\IKEEXT" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-:: sc triggerinfo IKEEXT starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-:: sc triggerinfo iphlpsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcaSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-:: sc triggerinfo NcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\PolicyAgent" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-:: sc triggerinfo PolicyAgent starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnOverMeteredNetworks" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnWhileRoaming" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\SstpSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+echo "VPN/IPSEC/IPV6 INFRASTRUCTURE STUFF" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\IKEEXT" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo IKEEXT starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcaSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo NcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\PolicyAgent" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo PolicyAgent starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo RasMan starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnOverMeteredNetworks" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnWhileRoaming" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SstpSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo SstpSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
 echo "MOUSE STUFF POINTER SPEED DEFAULT (10 IN REGISTRY/MS-SETTINGS:MOUSETOUCHPAD) (6/11 IN SLIDER/MAIN.CPL)" >> "%log%"
 reg add "HKCU\Control Panel\Desktop" /v "DragFullWindows" /t REG_SZ /d 1 /f >> "%log%" 2>&1
@@ -625,7 +628,6 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Remote Assistance" /v "fAllowToGe
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v "fDenyTSConnections" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd" /v "fDisableClip" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd" /v "StartupPrograms" /t REG_SZ /d "" /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteRegistry" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TermService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
