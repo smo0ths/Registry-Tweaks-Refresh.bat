@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.0.8
+# Registry-Tweaks-Refresh.bat v1.0.9
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -306,6 +306,7 @@ goto RTR
 
 :invalidchoice
 echo "INVALID COMMAND RUN BAT AGAIN"
+echo "INVALID COMMAND RUN BAT AGAIN" >> "%log%"
 powershell -c "(New-Object Media.SoundPlayer 'C:\Windows\Media\Windows User Account Control.wav').PlaySync()"
 exit /b
 
@@ -408,7 +409,7 @@ echo "PASSKEYS" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsAccessPasskeyAutofill" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsControlPasskeys" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 
-echo "VPN/IPSEC/IPV6 INFRASTRUCTURE STUFF" >> "%log%"
+echo "VPN/IPSEC/IPV6 INFRASTRUCTURE STUFF (DISM /ONLINE /ENABLE-FEATURE /FEATURENAME:VPN)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\IKEEXT" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo IKEEXT starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -677,10 +678,14 @@ sc triggerinfo UserDataSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpnUserService" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\Clip\License Validation" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Shell\IndexerAutomaticMaintenance" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Shell\ThemesSyncedImageDownload" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Shell\IndexerAutomaticMaintenance" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Shell\ThemesSyncedImageDownload" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Subscription\LicenseAcquisition" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+:: echo "NETWORK LOCATION AWARENESS DEFAULT" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\NlaSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\NlaSvc\Parameters\Internet" /v "EnableActiveProbing" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 
 echo "MSEC STUFF DISABLED" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Browser\AllowSmartScreen" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
