@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.0.9
+# Registry-Tweaks-Refresh.bat v1.1.0
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -534,6 +534,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\dmwappushservice" /v "Start" /t 
 
 echo "DISABLED CONNECTED USER EXPERIENCES AND TELEMETRY SERVICE DEFAULT 2" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DiagTrack" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo "DECLARED CONFIGURATION(DC) SERVICE (DATA COLLECTION SERVICE)" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\dcsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo dcsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "GEOLOCATION SERVICE, IT MANAGES LOCATION DATA FOR YOUR DEVICE DEFAULT 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lfsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
