@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.1.0
+# Registry-Tweaks-Refresh.bat v1.1.1
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -342,7 +342,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Schedule
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
 echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD PARTY) DEFAULT 2" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 
 echo "SETTINGS > PRIVACY & SECURITY > APP PERMISSIONS (0=TOGGLE 1=FORCE ALLOW 2=FORCE DENY FOR LETAPPSACCESS)" >> "%log%"
 echo "LOCATION" >> "%log%"
@@ -409,7 +409,7 @@ echo "PASSKEYS" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsAccessPasskeyAutofill" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsControlPasskeys" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 
-echo "VPN/IPSEC/IPV6 INFRASTRUCTURE STUFF (DISM /ONLINE /ENABLE-FEATURE /FEATURENAME:VPN)" >> "%log%"
+echo "VPN/IPSEC/IPV6 INFRASTRUCTURE STUFF" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\IKEEXT" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo IKEEXT starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\iphlpsvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -635,6 +635,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd" /v "fD
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd" /v "StartupPrograms" /t REG_SZ /d "" /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteRegistry" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\TermService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinRM" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\RemoteAssistance\RemoteAssistanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "OPTIMIZE DRIVES" >> "%log%"
