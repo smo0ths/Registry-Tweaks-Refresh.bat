@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.1.2
+# Registry-Tweaks-Refresh.bat v1.1.3
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -49,22 +49,21 @@ goto invalidchoice
 
 :disableupdates
 echo "DISABLING WINDOWS UPDATES" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\hpatchmon" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\Hotpatch\Monitoring" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 net stop BITS 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop InstallService 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop TrustedInstaller 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop wuauserv 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 goto AUTODRIVchoice
 
 :enableupdates
 echo "ENABLING WINDOWS UPDATES" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DoSvc" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\hpatchmon" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo hpatchmon starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -72,7 +71,7 @@ schtasks /change /tn "\Microsoft\Windows\Hotpatch\Monitoring" /enable 2>&1 | fin
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo UsoSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+net start WaaSMedicSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo wuauserv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 goto AUTODRIVchoice
@@ -341,8 +340,12 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Schedule
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
-echo "BACKGROUND INTELLIGENT TRANSFER SERVICE (WINDOWS UPDATE/STORE/DEFENDER/TELEMETRY AND DIAG/3RD PARTY) DEFAULT 2" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\BITS" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+echo "THE MICROSOFT ACCOUNT SIGN IN ASSISTANT SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo wlidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "QUICK MACHINE RECOVERY SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
 echo "SETTINGS > PRIVACY & SECURITY > APP PERMISSIONS (0=TOGGLE 1=FORCE ALLOW 2=FORCE DENY FOR LETAPPSACCESS)" >> "%log%"
 echo "LOCATION" >> "%log%"
@@ -810,10 +813,6 @@ echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set R
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 :: echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WinDefend (set REG_DWORD 2)" >> "%log%"
 
-echo "THE MICROSOFT ACCOUNT SIGN IN ASSISTANT SERVICE" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-sc triggerinfo wlidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-
 echo "TCP/IP NETBIOS HELPER" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo lmhosts starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -1278,11 +1277,10 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" /v "Enab
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader" /v "AllowTabPreloading" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\edgeupdate" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-:: sc triggerinfo edgeupdate starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\edgeupdatem" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\edgeupdate" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\edgeupdatem" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo edgeupdatem starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\MicrosoftEdgeElevationService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\MicrosoftEdgeElevationService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo MicrosoftEdgeElevationService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /ve /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /ve /t REG_DWORD /d 0 /f >> "%log%" 2>&1
