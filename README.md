@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.1.3
+# Registry-Tweaks-Refresh.bat v1.1.4
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log and force them with a registry editor, skim through for more info
 #### use Autoruns64.exe to find out more about your PC's autoruns
@@ -21,6 +21,9 @@ setlocal EnableDelayedExpansion
 set "log=%userprofile%\desktop\registry-tweaks-refresh.txt"
 
 :: echo "REG_DWORD VALUES 0=BOOT 1=SYSTEM 2=AUTOMATIC 3=MANUAL 4=DISABLED"
+
+:: echo "STARTING TASK MANAGER"
+timeout /t 1 >nul && start "" "taskmgr"
 
 :restorechoice
 echo "Y OPENS SYSTEM PROPERTIES SO YOU CAN CREATE A RESTORE POINT, N SKIPS"
@@ -340,12 +343,15 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Schedule
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
-echo "THE MICROSOFT ACCOUNT SIGN IN ASSISTANT SERVICE" >> "%log%"
+echo "MICROSOFT ACCOUNT SIGN IN ASSISTANT" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo wlidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "QUICK MACHINE RECOVERY SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+
+echo "LANGUAGE EXPERIENCE SERVICE DISABLED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LxpSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
 echo "SETTINGS > PRIVACY & SECURITY > APP PERMISSIONS (0=TOGGLE 1=FORCE ALLOW 2=FORCE DENY FOR LETAPPSACCESS)" >> "%log%"
 echo "LOCATION" >> "%log%"
@@ -892,7 +898,6 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\FontCache" /v "Start" /t REG_DWO
 
 echo "WINDOWS INSTALLER SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\msiserver" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-sc triggerinfo msiserver starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "PROGRAM COMPATIBILITY ASSISTANT SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PcaSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
@@ -1270,25 +1275,33 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "NewTabPagePrerenderEnabled" 
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "PasswordManagerEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "PrelaunchEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v "SearchSuggestEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: reg add "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "CreateDesktopShortcutDefault" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: reg add "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "UpdateDefault" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main" /v "AllowPrelaunch" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter" /v "EnabledV9" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\MicrosoftEdge\TabPreloader" /v "AllowTabPreloading" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "CreateDesktopShortcutDefault" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Policies\Microsoft\EdgeUpdate" /v "UpdateDefault" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+:: reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\EdgeUpdate" /f >> "%log%" 2>&1
+:: reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /f >> "%log%" 2>&1
+:: reg delete "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /f >> "%log%" 2>&1
+reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /ve /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /ve /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Ext\CLSID" /v "{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+:: reg add "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\Ext\CLSID" /v "{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineCore{3EC71BEB-F725-4450-AD64-9D1C829FDFDA}" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\MicrosoftEdgeUpdateTaskMachineUA{30E97D55-D54A-4306-BE07-817C718A05B7}" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "EDGE SERVICES TWEAKED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\edgeupdate" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\edgeupdatem" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo edgeupdatem starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\MicrosoftEdgeElevationService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo MicrosoftEdgeElevationService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: echo "EDGE SERVICES DEFAULT" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\edgeupdate" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\edgeupdatem" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo edgeupdatem starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\MicrosoftEdgeElevationService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo MicrosoftEdgeElevationService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /ve /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-reg add "HKLM\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /ve /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Ext\CLSID" /v "{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: reg add "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\Ext\CLSID" /v "{1FD49718-1D00-4B19-AF5F-070AF6D5D54C}" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-:: reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /f >> "%log%" 2>&1
-:: reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\EdgeUpdate" /f >> "%log%" 2>&1
-:: reg delete "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /f >> "%log%" 2>&1
 
 :: echo "EDGE STUFF MICROSOFTEDGEUPDATETASKMACHINE DISABLED" >> "%log%"
 :: for /f "tokens=2 delims=:" %%T in (
