@@ -3,6 +3,7 @@ Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log(on desktop) and force them with a registry editor
 #### when updates schedule start just run disable updates again and exit bat (check log)
 #### %ProgramData%\Microsoft\Windows\Start Menu\Programs\Startup (put .bat in here if you want)
+#### use Autoruns64.exe to find out more about your PC's autoruns
 #### skim through for more info
 
 ```python
