@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.1.4
+# Registry-Tweaks-Refresh.bat v1.1.5
 Windows 11 Registry Tweaks
 #### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log(on desktop) and force them with a registry editor
 #### when updates schedule start just run disable updates again and exit bat (check log)
@@ -22,6 +22,18 @@ color 0A
 :: echo "ENVIRONMENT"
 setlocal EnableDelayedExpansion
 set "log=%userprofile%\desktop\registry-tweaks-refresh.txt"
+
+:: echo "TITLE"
+set "hour=%time:~0,2%"
+set "min=%time:~3,2%"
+set "sec=%time:~6,2%"
+if "%hour:~0,1%"==" " set "hour=0%hour:~1,1%"
+set /a hourInt=1%hour%-100
+set "ampm=AM"
+if %hourInt% GEQ 12 set "ampm=PM"
+if %hourInt% GTR 12 set /a hourInt-=12
+if %hourInt%==0 set hourInt=12
+title %~nx0 - %date% %hourInt%:%min%:%sec% %ampm%
 
 :: echo "REG_DWORD VALUES 0=BOOT 1=SYSTEM 2=AUTOMATIC 3=MANUAL 4=DISABLED"
 
@@ -63,7 +75,13 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD 
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 net stop BITS 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop DsmSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop InstallService 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop LicenseManager 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop TimeBrokerSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop WaaSMedicSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop wlidsvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop wuauserv 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 goto AUTODRIVchoice
 
@@ -93,12 +111,16 @@ goto invalidchoice
 echo "DISABLING AUTOMATICALLY SEARCH WINDOWS UPDATE FOR DRIVERS WHEN NEW HARDWARE IS CONNECTED" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\DsmSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo DsmSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 goto DRIVERchoice
 
 :enableAUTODRIVchoice
 echo "ENABLING AUTOMATICALLY SEARCH WINDOWS UPDATE FOR DRIVERS WHEN NEW HARDWARE IS CONNECTED" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v "SearchOrderConfig" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\DsmSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo DsmSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 goto DRIVERchoice
 
 :DRIVERchoice
@@ -356,6 +378,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuqisvc" /v "Start" /t REG_DWORD
 echo "LANGUAGE EXPERIENCE SERVICE DISABLED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LxpSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
+:: echo "UPDATE HEALTH SERVICE DEPRECATED IN 25H2" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\uhssvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\uhssvc" /v "DelayedAutoStart" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+
 echo "SETTINGS > PRIVACY & SECURITY > APP PERMISSIONS (0=TOGGLE 1=FORCE ALLOW 2=FORCE DENY FOR LETAPPSACCESS)" >> "%log%"
 echo "LOCATION" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" /v "DisableLocation" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -559,6 +585,23 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\lfsvc" /v "Start" /t REG_DWORD /
 echo "CRASH REPORTING BACKBONE OF WINDOWS DISABLED DEFAULT 3" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WerSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo WerSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "PAYMENTS AND NFC/SE MANAGER" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SEMgrSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo SEMgrSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "WARP JIT SERVICE D3D10WARP.DLL" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WarpJITSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo WarpJITSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+echo "RECOMMENDED TROUBLESHOOTING SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\TroubleshootingSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+
+echo "ZTDNS HELPER SERVICE" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\ZTHELPER" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+
+echo "PARENTAL CONTROLS" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpcMonSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
 echo "ENABLING LOCAL TROUBLESHOOTING" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -1500,8 +1543,6 @@ schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable
 schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Sustainability\SustainabilityTelemetry" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\UsageAndQualityInsights\UsageAndQualityInsights-MaintenanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "\Microsoft\Windows\UsageAndQualityInsights\UsageAndQualityInsights-MaintenanceTask Access is denied" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WindowsAI\Recall\InitialConfiguration" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\NotificationTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -1529,6 +1570,20 @@ schtasks /change /tn "\Microsoft\Windows\UPnP\UPnPHostConfig" /enable 2>&1 | fin
 schtasks /change /tn "\Microsoft\Windows\USB\Usb-Notifications" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WDI\ResolutionHost" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Windows Filtering Platform\BfeOnServiceStartTypeChange" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
+:: echo "SCHTASKS CANNOT DISABLE" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\Shell\UpdateUserPictureTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Report policies" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan Static Task" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\Start Oobe Expedite Work" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScan_LicenseAccepted" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\StartOobeAppsScanAfterUpdate" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UIEOrchestrator" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UpdateOrchestrator\UUS Failover Task" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: schtasks /change /tn "\Microsoft\Windows\UsageAndQualityInsights\UsageAndQualityInsights-MaintenanceTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+:: echo "\Microsoft\Windows\UsageAndQualityInsights\UsageAndQualityInsights-MaintenanceTask Access is denied" >> "%log%"
 
 :: echo "UPDATE DELETES" >> "%log%"
 :: reg delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\ClipchampUpdate" /f >> "%log%" 2>&1
