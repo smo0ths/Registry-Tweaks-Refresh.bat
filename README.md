@@ -1,12 +1,3 @@
-# Registry-Tweaks-Refresh.bat v1.1.5
-Windows 11 Registry Tweaks
-#### this is what i use, make the bat file run it in Safe Mode and Normal Mode find CHANGE* regs in log(on desktop) and force them with a registry editor
-#### when updates schedule start just run disable updates again and exit bat (check log)
-#### %ProgramData%\Microsoft\Windows\Start Menu\Programs\Startup (put .bat in here if you want)
-#### use Autoruns64.exe to find out more about your PC's autoruns
-#### skim through for more info
-
-```python
 @echo off
 
 :: echo "CHECK ADMIN RIGHTS USING FLTMC (WORKS WITHOUT SERVER SERVICE)"
@@ -38,7 +29,7 @@ title %~nx0 - %date% %hourInt%:%min%:%sec% %ampm%
 :: echo "REG_DWORD VALUES 0=BOOT 1=SYSTEM 2=AUTOMATIC 3=MANUAL 4=DISABLED"
 
 :: echo "STARTING TASK MANAGER"
-timeout /t 1 >nul && start "" "taskmgr"
+:: timeout /t 1 >nul && start "" "taskmgr"
 
 :restorechoice
 echo "Y OPENS SYSTEM PROPERTIES SO YOU CAN CREATE A RESTORE POINT, N SKIPS"
@@ -78,7 +69,6 @@ net stop BITS 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop DsmSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop InstallService 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop LicenseManager 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop TimeBrokerSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop WaaSMedicSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop wlidsvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
@@ -1607,4 +1597,3 @@ powershell -c "(New-Object Media.SoundPlayer 'C:\Windows\Media\tada.wav').PlaySy
 :: taskkill /f /im explorer.exe && start explorer.exe
 endlocal
 pause >nul
-```
