@@ -605,6 +605,7 @@ echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost d
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost default 3" >> "%log%"
 
+echo "ENABLE OR DISABLE WHEA LOGGER" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 :: reg delete "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /f >> "%log%" 2>&1
 
