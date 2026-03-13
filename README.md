@@ -75,13 +75,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD 
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 net stop BITS 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop DsmSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop InstallService 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop LicenseManager 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop WaaSMedicSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop wlidsvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop wuauserv 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 goto AUTODRIVchoice
 
 :enableupdates
@@ -501,7 +495,7 @@ echo "BOOSTS/QUANTUM DEFAULT IS BALANCE/SAFER=26 (2:1/SHORT) EVEN/RESPONSIVE/SMO
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 26 /f >> "%log%" 2>&1
 
 echo "BORDERLESS FULLSCREEN: ALWAYS COMPOSITED BY DWM, SIMPLEST AND MOST STABLE BUT LESS EFFICIENT THAN FSE/EFSE(FO)" >> "%log%"
-echo "FULLSCREEN EXCLUSIVE (FSE): BYPASSES DWM FOR LOWEST LATENCY/BEST PERFORMANCE, BUT ALT TABBING IS SLOW/FLICKERY, FORCE IT BY CHECKING DISABLE FULLSCREEN OPTIMIZATIONS IN .EXE/DSEBEHAVIOR=2/OR JUST SETTING GAME TO FULLSCREEN IF SUPPORTED" >> "%log%"
+echo "FULLSCREEN EXCLUSIVE (FSE): BYPASSES DWM FOR LOWEST LATENCY/BEST PERFORMANCE, BUT ALT TABBING IS SLOW/FLICKERY, FORCE IT BY CHECKING DISABLE FULLSCREEN OPTIMIZATIONS IN .EXE OR JUST SETTING GAME TO FULLSCREEN IF SUPPORTED" >> "%log%"
 echo "FULLSCREEN OPTIMIZATIONS (FO/EFSE): USES FLIP MODEL PRESENTATION THROUGH DWM FOR NEAR FSE PERFORMANCE WITH INSTANT ALT TAB AND WORKING OVERLAYS/NOTIFICATIONS" >> "%log%"
 echo "MOST OF THESE ARE FOR TROUBLESHOOTING/TESTING" >> "%log%"
 reg add "HKCU\SYSTEM\GameConfigStore" /v "GameDVR_DSEBehavior" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -602,21 +596,20 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\ZTHELPER" /v "Start" /t REG_DWOR
 echo "PARENTAL CONTROLS" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WpcMonSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
-echo "ENABLING LOCAL TROUBLESHOOTING" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
-echo "HKLM\SYSTEM\CurrentControlSet\Services\DPS default 2" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost default 3" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-echo "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost default 3" >> "%log%"
+echo "ENABLING OR DISABLING LOCAL TROUBLESHOOTING" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\DPS" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\DPS default 2" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiServiceHost default 3" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+echo "---------> CHANGE* HKLM\SYSTEM\CurrentControlSet\Services\WdiSystemHost default 3" >> "%log%"
+
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+:: reg delete "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /f >> "%log%" 2>&1
 
 echo "WINDOWS HEALTH AND OPTIMIZED EXPERIENCES TELEMETRY" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo whesvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-
-:: echo "WHEA LOGGER" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-:: reg delete "HKLM\SYSTEM\CurrentControlSet\Control\WHEA\Logger" /v "DisableLogging" /f >> "%log%" 2>&1
 
 echo "ADVERTISING/CLOUD SUGGESTIONS" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v "Enabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -705,6 +698,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\luafv" /v "Start" /t REG_DWORD /
 echo "UNIVERSAL WINDOWS PLATFORM(UWP/APP MODEL)/STORE/BACKEND/FRAMEWORK" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppReadiness" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo AppReadiness starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+echo "APPXSVC WAS CHANGE TO AUTOMATIC IN .7462" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppXSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo AppXSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\camsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
@@ -716,6 +710,8 @@ sc triggerinfo ClipSVC starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%
 echo "[SC] OpenService FAILED 5 (starttype Access is denied)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\InstallService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo InstallService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\LicenseManager" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo LicenseManager starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcbService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo NcbService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\OneSyncSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
@@ -1513,36 +1509,37 @@ schtasks /change /tn "\Microsoft\Windows\Application Experience\StartupAppTask" 
 schtasks /change /tn "\Microsoft\Windows\ApplicationData\DsSvcCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\CloudExperienceHost\CreateObjectTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\ConsentUX\UnifiedConsent\UnifiedConsentSyncTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\ConsentUX\UnifiedConsent\UnifiedConsentSyncTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Device Information\Device User" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Device Information\Device" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Diagnosis\RecommendedTroubleshootingScanner" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Diagnosis\Scheduled" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\DiskCleanup\SilentCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticResolver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\DiskFootprint\Diagnostics" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\BootstrapUsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\BootstrapUsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\GovernedFeatureUsageProcessing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataFlushing" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReceiver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReceiver" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\FeatureConfig\UsageDataReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Flighting\OneSettings\RefreshCache" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\InstallService\RestoreDevice" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\InstallService\ScanForUpdates" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\InstallService\ScanForUpdatesAsUser" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\InstallService\SmartRetry" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\InstallService\WakeUpAndContinueUpdates" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\InstallService\WakeUpAndScanForUpdates" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Maintenance\WinSAT" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\PI\Sqm-Tasks" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Power Efficiency Diagnostics\AnalyzeSystem" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyMonitor" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Shell\FamilySafetyRefreshTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Sustainability\PowerGridForecastTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Sustainability\SustainabilityTelemetry" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WindowsAI\Recall\InitialConfiguration" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\WlanSvc\MoProfileManagement" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\NotificationTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\WwanSvc\OobeDiscovery" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
