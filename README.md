@@ -1,8 +1,9 @@
-# Registry-Tweaks-Refresh.bat v1.1.8
+# Registry-Tweaks-Refresh.bat v1.1.9
 #### Windows 11 Registry Tweaks (press <kbd>⊞ Win+R</kbd> type "winver") tested up to 25H2 .8655
 #### this is what i use, make bat file and run in Safe Mode and Normal Mode and
 #### check log on desktop find ---------> CHANGE* keys and change them in RegCool.exe(or other) manually
 #### run often and after updates ect.
+#### sc triggerinfo SERVICENAME starttype= all used to restore MANUAL (TRIGGER START) and not just MANUAL but it might not maybe windows AI devs will create a way to restore 100% defaults
 #### registry changes are hardcore, you can press <kbd>⊞ Win+R</kbd> type "regedit" and Export your default .reg if you want a default backup
 #### use Autoruns64.exe to find out more about your PC's autoruns
 #### skim through for more info
@@ -370,7 +371,10 @@ goto invalidchoice
 :noblue
 echo "DISABLING BLUETOOTH" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTAGService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BthA2dp" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthav" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BthHFEnum" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHMODEM" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHUSB" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -383,8 +387,14 @@ goto PowerThrottlingchoice
 echo "ENABLING BLUETOOTH" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTAGService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo BTAGService starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BthA2dp" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo BthA2dp starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthav" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo bthav starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BthHFEnum" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo BthHFEnum starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHMODEM" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+sc triggerinfo BTHMODEM starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo BTHPORT starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\bthserv" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -571,7 +581,7 @@ echo "TIMER RESOLUTION (10000×100ns = 1,000,000ns = 1 millisecond)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 10000 /f >> "%log%" 2>&1
 :: echo "TIMER RESOLUTION (5000×100ns = 500,000ns = 0.5 milliseconds)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 5000 /f >> "%log%" 2>&1
-:: echo "TIMER RESOLUTION DEFAULT NOT IN REGISTRY" >> "%log%"
+:: echo "TIMER RESOLUTION DEFAULT NOT IN REGISTRY I THINK" >> "%log%"
 :: reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /f >> "%log%" 2>&1
 
 echo "MULTIMEDIA CLASS SCHEDULER SERVICE DEFAULTS" >> "%log%"
@@ -790,7 +800,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\luafv" /v "Start" /t REG_DWORD /
 echo "UNIVERSAL WINDOWS PLATFORM(UWP/APP MODEL)/STORE/BACKEND/FRAMEWORK" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppReadiness" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo AppReadiness starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-echo "APPXSVC WAS CHANGE TO AUTOMATIC IN .7462" >> "%log%"
+echo "APPXSVC WAS CHANGED TO AUTOMATIC IN .7462 I KEEP IT MANUAL (TRIGGER START) FOR NOW" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\AppXSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo AppXSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\camsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
@@ -942,7 +952,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\DispBrokerDesktopSvc" /v "Start"
 echo "DISPLAY COLOR/BRIGHTNESS ENHANCEMENTS" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DisplayEnhancementService" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
-echo "WINDOWS EVENT LOG SERVICE" >> "%log%"
+echo "WINDOWS EVENT LOG AND COLLECTOR SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\EventLog" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Wecsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 
