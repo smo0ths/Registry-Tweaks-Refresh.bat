@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.1.9
+# Registry-Tweaks-Refresh.bat v1.2.0
 #### Windows 11 Registry Tweaks (press <kbd>⊞ Win+R</kbd> type "winver") tested up to 25H2 .8655
 #### this is what i use, make bat file and run in Safe Mode and Normal Mode and
 #### check log on desktop find ---------> CHANGE* keys and change them in RegCool.exe(or other) manually
@@ -76,8 +76,9 @@ schtasks /change /tn "\Microsoft\Windows\Hotpatch\Monitoring" /disable 2>&1 | fi
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
-net stop BITS 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
-net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
+net stop BITS 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >> "%log%"
+net stop UsoSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >> "%log%"
+net stop wuauserv 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >> "%log%"
 goto AUTODRIVchoice
 
 :enableupdates
@@ -90,7 +91,6 @@ schtasks /change /tn "\Microsoft\Windows\Hotpatch\Monitoring" /enable 2>&1 | fin
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\UsoSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo UsoSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-net start WaaSMedicSvc 2>&1 | findstr /V "HELPMSG" | findstr /R /V "^$" >>"%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wuauserv" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo wuauserv starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 goto AUTODRIVchoice
@@ -317,6 +317,8 @@ reg add "HKCU\Control Panel\Desktop" /v "TouchGestureSetting" /t REG_DWORD /d 0 
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "DisableNewKeyboardExperience" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableCompatibilityKeyboard" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableDesktopModeAutoInvoke" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableTabTip" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableTouchKeyboardAutoInvoke" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "KeyboardLayoutPreference" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "UserKeyboardScalingFactor" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TouchMode" /v "ShowTouchModeButton" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -324,6 +326,9 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\PenWorkspace" /v "PenWor
 reg add "HKCU\SOFTWARE\Microsoft\Wisp\Pen\Flicks" /v "EnableFlicks" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Wisp\Pen\PenFeedback" /v "TurnOnPressAndHold" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\Software\Microsoft\Wisp\Touch" /v "TouchGate" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableDoubleTapSpace" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnablePredictionSpaceInsertion" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableTextPrediction" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "TipbandDesiredVisibility" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell" /v "TabletMode" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PrecisionTouchPad" /v "EnableVirtualTouchpad" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -342,6 +347,8 @@ reg add "HKCU\Control Panel\Desktop" /v "TouchGestureSetting" /t REG_DWORD /d 1 
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "DisableNewKeyboardExperience" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableCompatibilityKeyboard" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableDesktopModeAutoInvoke" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableTabTip" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableTouchKeyboardAutoInvoke" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "KeyboardLayoutPreference" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\TabletTip\1.7" /v "UserKeyboardScalingFactor" /t REG_DWORD /d 100 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TouchMode" /v "ShowTouchModeButton" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -349,6 +356,9 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\PenWorkspace" /v "PenWor
 reg add "HKCU\SOFTWARE\Microsoft\Wisp\Pen\Flicks" /v "EnableFlicks" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Wisp\Pen\PenFeedback" /v "TurnOnPressAndHold" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKCU\Software\Microsoft\Wisp\Touch" /v "TouchGate" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableDoubleTapSpace" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnablePredictionSpaceInsertion" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "EnableTextPrediction" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\TabletTip\1.7" /v "TipbandDesiredVisibility" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell" /v "TabletMode" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PrecisionTouchPad" /v "EnableVirtualTouchpad" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -462,6 +472,9 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "Schedule
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "ScheduledInstallTime" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "UseWUServer" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
+echo "MICROSOFT STORE UPDATES DISABLED" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\WindowsStore" /v "DisableStoreNetworkUsage" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+
 echo "MICROSOFT ACCOUNT SIGN IN ASSISTANT" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\wlidsvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo wlidsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -494,8 +507,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\PushToInstall" /v "Start" /t REG
 reg add "HKLM\SOFTWARE\Policies\Microsoft\PushToInstall" /v "DisablePushToInstall" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 schtasks /change /tn "\Microsoft\Windows\PushToInstall\LoginCheck" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\PushToInstall\Registration" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: echo "ACCOUNT INFO" >> "%log%"
-:: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsAccessAccountInfo" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+echo "ACCOUNT INFO" >> "%log%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsAccessAccountInfo" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 echo "CONTACTS" >> "%log%"
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsAccessContacts" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
 echo "CALENDAR" >> "%log%"
@@ -559,18 +572,18 @@ sc triggerinfo SstpSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
 echo "MOUSE STUFF POINTER SPEED DEFAULT (10 IN REGISTRY/MS-SETTINGS:MOUSETOUCHPAD) (6/11 IN SLIDER/MAIN.CPL)" >> "%log%"
-reg add "HKCU\Control Panel\Desktop" /v "DragFullWindows" /t REG_SZ /d 1 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "DragHeight" /t REG_SZ /d 4 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "DragWidth" /t REG_SZ /d 4 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_SZ /d 400 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "SmoothScroll" /t REG_SZ /d 1 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Mouse" /v "DoubleClickSpeed" /t REG_SZ /d 500 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Mouse" /v "ListViewHoverTime" /t REG_SZ /d 400 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_SZ /d 400 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Mouse" /v "MouseSensitivity" /t REG_SZ /d 10 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Mouse" /v "MouseSpeed" /t REG_SZ /d 0 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Mouse" /v "MouseThreshold1" /t REG_SZ /d 0 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Mouse" /v "MouseThreshold2" /t REG_SZ /d 0 /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "DragFullWindows" /t REG_SZ /d "1" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "DragHeight" /t REG_SZ /d "4" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "DragWidth" /t REG_SZ /d "4" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "MenuShowDelay" /t REG_SZ /d "400" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "SmoothScroll" /t REG_SZ /d "1" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "DoubleClickSpeed" /t REG_SZ /d "500" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "ListViewHoverTime" /t REG_SZ /d "400" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseHoverTime" /t REG_SZ /d "400" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseSensitivity" /t REG_SZ /d "10" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseSpeed" /t REG_SZ /d "0" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseThreshold1" /t REG_SZ /d "0" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Mouse" /v "MouseThreshold2" /t REG_SZ /d "0" /f >> "%log%" 2>&1
 
 :: echo "HIDE SETTINGS PAGES DELETE RESTORES DEFAULT" >> "%log%"
 :: reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "SettingsPageVisibility" /t REG_SZ /d "hide:home" /f >> "%log%" 2>&1
@@ -638,7 +651,7 @@ echo "SMS ROUTER SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\SmsRouter" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 
 echo "THIS PREVENTS WINDOWS FROM AUTO ASSIGNING MUSIC/PICTURES/VIDEOS TEMPLATES BASED ON CONTENT AND UNDO REG DELETE" >> "%log%"
-reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /t REG_SZ /d NotSpecified /f >> "%log%" 2>&1
+reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /t REG_SZ /d "NotSpecified" /f >> "%log%" 2>&1
 :: reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell" /v "FolderType" /f >> "%log%" 2>&1
 
 echo "WINHTTP WEB PROXY AUTO DISCOVERY SERVICE (WPAD) PROTOCOL CHECK WITH (NETSH WINHTTP SHOW PROXY) (DISABLEWPAD DEFAULT DELETE)" >> "%log%"
@@ -715,6 +728,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\whesvc" /v "Start" /t REG_DWORD 
 
 echo "ADVERTISING/CLOUD SUGGESTIONS" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v "Enabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\BehaviorMonitoring" /v "DisableSuggestedActions" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost" /v "EnableWebContentEvaluation" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" /v "DisabledByGroupPolicy" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 
@@ -841,7 +855,7 @@ schtasks /change /tn "\Microsoft\Windows\Shell\ThemesSyncedImageDownload" /disab
 schtasks /change /tn "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Subscription\LicenseAcquisition" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
-:: echo "NETWORK LOCATION AWARENESS DEFAULT" >> "%log%"
+:: echo "NETWORK LOCATION AWARENESS DEFAULT 3 BLOCK IN FIREWALL FOR MORE SECURITY BUT WINDOWS WILL HAVE TROUBLE FINDING CONNECTION STATUS" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\NlaSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\NlaSvc\Parameters\Internet" /v "EnableActiveProbing" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 
@@ -880,9 +894,9 @@ schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Clean
 schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Windows Defender\Windows Defender Verification" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
-echo "TCP/IP NETBIOS HELPER" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-sc triggerinfo lmhosts starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+echo "TCP/IP NETBIOS HELPER DEFAULT 3 I ALSO DISABLE NETBIOS IN NETWORKADAPTERCONFIGURATION" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\lmhosts" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo lmhosts starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "WINDOWS NETWORK DATA USAGE DRIVER" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Ndu" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
@@ -898,6 +912,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\CaptureService" /v "Start" /t RE
 echo "CLIPBOARD HISTORY SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\cbdhsvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo cbdhsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Clipboard" /v "EnableClipboardHistory" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowClipboardHistory" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "AllowClipboardHistory" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "AllowCrossDeviceClipboard" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
 echo "DATA USAGE SERVICE" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\DusmSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
@@ -1001,7 +1019,7 @@ echo "HKLM\SYSTEM\CurrentControlSet\Services\wscsvc default 2" >> "%log%"
 echo "WINDOWS TIME FOR LOCAL CMOS CLOCK" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo W32Time starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NoSync /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d "NoSync" /f >> "%log%" 2>&1
 :: w32tm /config /syncfromflags:NO /update
 :: net stop W32Time && net start W32Time
 :: w32tm /resync /nowait
@@ -1009,7 +1027,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t
 :: echo "WINDOWS TIME FOR NTP" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: sc triggerinfo W32Time starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d NTP /f >> "%log%" 2>&1
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t REG_SZ /d "NTP" /f >> "%log%" 2>&1
 :: w32tm /config /manualpeerlist:"time.windows.com,0x8" /syncfromflags:MANUAL /update
 :: net stop W32Time && net start W32Time
 :: w32tm /resync /nowait
@@ -1056,8 +1074,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\InputPersonalization" /v "RestrictClou
 reg add "HKLM\SOFTWARE\Policies\Microsoft\InputPersonalization" /v "RestrictImplicitInkCollection" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\InputPersonalization" /v "RestrictImplicitTextCollection" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization" /v "NoLockScreen" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "AllowClipboardHistory" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v "AllowCrossDeviceClipboard" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
 echo "YOU DON'T WANT SEARCH BOX AND RANDOM IO FROM SEARCHINDEXER/SEARCHHOST AND 6X MSEDGEWEBVIEW2" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -1077,9 +1093,9 @@ schtasks /change /tn "\Microsoft\Windows\FileHistory\File History (maintenance m
 
 echo "PERSONALIZATION/EXPLORER/CONTROL PANEL TWEAKS/THEMES" >> "%log%"
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "HungAppTimeout" /t REG_SZ /d 5000 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop" /v "WaitToKillAppTimeout" /t REG_SZ /d 20000 /f >> "%log%" 2>&1
-reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v "MinAnimate" /t REG_SZ /d 0 /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "HungAppTimeout" /t REG_SZ /d "5000" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop" /v "WaitToKillAppTimeout" /t REG_SZ /d "20000" /f >> "%log%" 2>&1
+reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v "MinAnimate" /t REG_SZ /d "0" /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /ve /t REG_SZ /d "" /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Accessibility" /v "Animation" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "AutoCheckSelect" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -1129,12 +1145,14 @@ schtasks /change /tn "\Microsoft\Windows\Feedback\Siuf\DmClient" /disable 2>&1 |
 schtasks /change /tn "\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "DISABLE LOCATION ACCESS PROMPTS" >> "%log%"
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v "Value" /t REG_SZ /d Deny /f >> "%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v "Value" /t REG_SZ /d "Deny" /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\Location" /v "Value" /t REG_SZ /d "Deny" /f >> "%log%" 2>&1
 
-echo "DISABLE CONTENT DELIVERY AND APP SUGGESTIONS" >> "%log%"
+echo "DISABLE CONTENT DELIVERY AND APP SUGGESTIONS ECT" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "ContentDeliveryAllowed" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "FeatureManagementEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "OEMPreInstalledAppsEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PersonalizationData" /t REG_BINARY /d 00000000 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PreInstalledAppsEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PreInstalledAppsEverEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SilentInstalledAppsEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -1171,7 +1189,6 @@ echo "DISABLE USER PROFILE ENGAGEMENT PROMPTS" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\UserProfileEngagement" /v "ScoobeSystemSettingEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
 echo "DISABLE WINDOWS EXPERIENCE FEATURES" >> "%log%"
-reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowClipboardHistory" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowScreenRecorder" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowVoiceRecording" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Experience\EnableOrganizationalMessages" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -1255,13 +1272,15 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\InventorySvc" /v "Start" /t REG_
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\InventorySvc" /v "DelayedAutoStart" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 
 echo "WINDOWS TELEMETRY/DATA COLLECTION/CUSTOMER EXPERIENCE PROGRAM" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics" /v "DiagTrackDisabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics" /v "DiagTrackDisabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" /v "AllowTelemetry" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" /v "DoNotShowFeedbackNotifications" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" /v "MaxTelemetryAllowed" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\ScheduledDiagnostics" /v "EnabledExecution" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\Windows Reporting" /v "Disabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\SQMClient" /v "CEIPEnable" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\SQMClient" /v "CorporateSQMURL" /t REG_SZ /d 0.0.0.0 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\SQMClient" /v "CorporateSQMURL" /t REG_SZ /d "0.0.0.0" /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\SQMClient\Windows" /v "CEIPEnable" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "AITEnable" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat" /v "DisableInventory" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
@@ -1275,11 +1294,13 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Sta
 schtasks /change /tn "\Microsoft\Windows\Windows Error Reporting\QueueReporting" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "CORTANA STUFF" >> "%log%"
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "AllowCortana" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "CanCortanaBeEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "CortanaConsent" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "CortanaEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Windows Search" /v "CortanaConsent" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\Experience\AllowCortana" /v "Value" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "AllowCortana" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
 echo "HIBERNATE DISABLED" >> "%log%"
