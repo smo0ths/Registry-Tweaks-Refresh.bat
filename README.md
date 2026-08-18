@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.2.0
+# Registry-Tweaks-Refresh.bat v1.2.1
 #### Windows 11 Registry Tweaks (press <kbd>⊞ Win+R</kbd> type "winver") tested up to 25H2 .8655
 #### this is what i use, make bat file and run in Safe Mode and Normal Mode and
 #### check log on desktop find ---------> CHANGE* keys and change them in RegCool.exe(or other) manually
@@ -239,6 +239,8 @@ echo "DISABLING PRINTER" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintDeviceConfigurationService" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintWorkflowUserSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+schtasks /change /tn "\Microsoft\Windows\Printing\PrinterCleanupTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Printing\PrintJobCleanupTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 goto copilotchoice
 
 :enableprinter
@@ -247,6 +249,8 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintDeviceConfigurationService"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PrintWorkflowUserSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo PrintWorkflowUserSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Spooler" /v "Start" /t REG_DWORD /d 2 /f >> "%log%" 2>&1
+schtasks /change /tn "\Microsoft\Windows\Printing\PrinterCleanupTask" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\Printing\PrintJobCleanupTask" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 goto copilotchoice
 
 :copilotchoice
@@ -1551,6 +1555,7 @@ schtasks /change /tn "\Microsoft\Windows\Application Experience\PcaPatchDbTask" 
 schtasks /change /tn "\Microsoft\Windows\Application Experience\StartupAppTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\ApplicationData\DsSvcCleanup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\CloudExperienceHost\CreateObjectTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+schtasks /change /tn "\Microsoft\Windows\CloudRestore\Backup" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\ConsentUX\UnifiedConsent\UnifiedConsentSyncTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -1602,8 +1607,6 @@ for /f "tokens=2 delims=:" %%T in (
 echo "SCHTASKS ENABLE" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Autochk\Proxy" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\License Manager\TempSignedLicenseExchange" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Printing\PrinterCleanupTask" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-schtasks /change /tn "\Microsoft\Windows\Printing\PrintJobCleanupTask" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Subscription\EnableLicenseAcquisition" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Time Synchronization\ForceSynchronizeTime" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\TPM\Tpm-Maintenance" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -1644,6 +1647,7 @@ echo "REBOOT PC"
 powershell -c "(New-Object Media.SoundPlayer 'C:\Windows\Media\tada.wav').PlaySync()"
 :: RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters
 :: taskkill /f /im explorer.exe && start explorer.exe
+:: taskkill /f /im explorer.exe && del /a /q "%localappdata%\IconCache.db" && del /a /f /q "%localappdata%\Microsoft\Windows\Explorer\iconcache*" && start explorer.exe
 endlocal
 pause >nul
 ```
