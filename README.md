@@ -1,5 +1,5 @@
-# Registry-Tweaks-Refresh.bat v1.2.1
-#### Windows 11 Registry Tweaks (press <kbd>⊞ Win+R</kbd> type "winver") tested up to 25H2 .8655
+# Registry-Tweaks-Refresh.bat v1.2.2
+#### Windows 11 Registry Tweaks (press <kbd>⊞ Win+R</kbd> type "winver") tested up to 25H2 .9168
 #### this is what i use, make bat file and run in Safe Mode and Normal Mode and
 #### check log on desktop find ---------> CHANGE* keys and change them in RegCool.exe(or other) manually
 #### run often and after updates ect.
@@ -594,11 +594,13 @@ reg add "HKCU\Control Panel\Mouse" /v "MouseThreshold2" /t REG_SZ /d "0" /f >> "
 :: reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "SettingsPageVisibility" /f >> "%log%" 2>&1
 
 echo "CHECK YOUR CURRENT TIMER RESOLUTION (Get-Process | Where-Object { $_.Name -eq "System" } | Measure-Command { })" >> "%log%"
-echo "TIMER RESOLUTION (10000×100ns = 1,000,000ns = 1 millisecond)" >> "%log%"
+echo "TIMER RESOLUTION 10,000×100ns = 1,000,000ns(1ms)" >> "%log%"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 10000 /f >> "%log%" 2>&1
-:: echo "TIMER RESOLUTION (5000×100ns = 500,000ns = 0.5 milliseconds)" >> "%log%"
+:: echo "TIMER RESOLUTION 20,000×100ns = 2,000,000ns(2ms)" >> "%log%"
+:: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 20000 /f >> "%log%" 2>&1
+:: echo "TIMER RESOLUTION 5,000×100ns = 500,000ns(500µs)" >> "%log%"
 :: reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /t REG_DWORD /d 5000 /f >> "%log%" 2>&1
-:: echo "TIMER RESOLUTION DEFAULT NOT IN REGISTRY I THINK" >> "%log%"
+:: echo "TIMER RESOLUTION DEFAULT NOT IN REGISTRY I THINK IT IS PROB 10000 AND OR DOES NOTHING AT ALL" >> "%log%"
 :: reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Clock Rate" /f >> "%log%" 2>&1
 
 echo "MULTIMEDIA CLASS SCHEDULER SERVICE DEFAULTS" >> "%log%"
@@ -644,6 +646,7 @@ reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AllowAutoGameMode" /t REG_DWORD /d
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "AutoGameModeEnabled" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 echo "GAMEBAR" >> "%log%"
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "GameBarEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "GamepadNexusChordEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "GamePanelStartupTipIndex" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "ShowStartupPanel" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\GameBar" /v "UseNexusForGameBarEnabled" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
@@ -859,7 +862,7 @@ schtasks /change /tn "\Microsoft\Windows\Shell\ThemesSyncedImageDownload" /disab
 schtasks /change /tn "\Microsoft\Windows\Speech\SpeechModelDownloadTask" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\Subscription\LicenseAcquisition" /enable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
-:: echo "NETWORK LOCATION AWARENESS DEFAULT 3 BLOCK IN FIREWALL FOR MORE SECURITY BUT WINDOWS WILL HAVE TROUBLE FINDING CONNECTION STATUS" >> "%log%"
+:: echo "NETWORK LOCATION AWARENESS DEFAULT 3 BLOCK IN FIREWALL FOR MORE SECURITY BUT WINDOWS WILL HAVE TROUBLE FINDING CONNECTION STATUS TEST" >> "%log%"
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\NlaSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 :: reg add "HKLM\SYSTEM\CurrentControlSet\Services\NlaSvc\Parameters\Internet" /v "EnableActiveProbing" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 
@@ -1037,6 +1040,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" /v "Type" /t
 :: w32tm /resync /nowait
 :: w32tm /query /source
 
+:: echo "GAMEINPUT SERVICE (GAMEINPUT API WHO KNOWS)" >> "%log%"
+:: reg add "HKLM\SYSTEM\CurrentControlSet\Services\GameInputSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
+:: sc triggerinfo GameInputSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+
 echo "XBOX STUFF (ONLY NEED XBOXGIP FOR CONTROLLER)" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\XblAuthManager" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
 :: sc triggerinfo XblAuthManager starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
@@ -1095,6 +1102,10 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\fhsvc" /v "Start" /t REG_DWORD /
 :: sc triggerinfo fhsvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 schtasks /change /tn "\Microsoft\Windows\FileHistory\File History (maintenance mode)" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
+echo "MAKE MIDDLE MOUSE BUTTON OPEN IN NEW WINDOW NOT TABS (DEFAULT 0C0002000A01000060000000)" >> "%log%"
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" /v "Settings" /t REG_BINARY /d 0C0002002A01000060000000 /f >> "%log%" 2>&1
+:: reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" /v "Settings" /t REG_BINARY /d 0C0002000A01000060000000 /f >> "%log%" 2>&1
+
 echo "PERSONALIZATION/EXPLORER/CONTROL PANEL TWEAKS/THEMES" >> "%log%"
 reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\Control Panel\Desktop" /v "HungAppTimeout" /t REG_SZ /d "5000" /f >> "%log%" 2>&1
@@ -1129,8 +1140,8 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "ColorPrevalence" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "EnableTransparency" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
-reg add "HKCU\SOFTWARE\Microsoft\Windows\DWM" /v "AccentColor" /t REG_DWORD /d 0xff007d00 /f >> "%log%" 2>&1
-reg add "HKCU\SOFTWARE\Microsoft\Windows\DWM" /v "ColorPrevalence" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
+:: reg add "HKCU\SOFTWARE\Microsoft\Windows\DWM" /v "AccentColor" /t REG_DWORD /d 0xff007d00 /f >> "%log%" 2>&1
+:: reg add "HKCU\SOFTWARE\Microsoft\Windows\DWM" /v "ColorPrevalence" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" /v "ShowHibernateOption" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoAutorun" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoDriveTypeAutoRun" /t REG_DWORD /d 255 /f >> "%log%" 2>&1
