@@ -1,4 +1,4 @@
-# Registry-Tweaks-Refresh.bat v1.2.2
+# Registry-Tweaks-Refresh.bat v1.2.3
 #### Windows 11 Registry Tweaks (press <kbd>⊞ Win+R</kbd> type "winver") tested up to 25H2 .9168
 #### this is what i use, make bat file and run in Safe Mode and Normal Mode and
 #### check log on desktop find ---------> CHANGE* keys and change them in RegCool.exe(or other) manually
@@ -566,13 +566,13 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\NcaSvc" /v "Start" /t REG_DWORD 
 sc triggerinfo NcaSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\PolicyAgent" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
 sc triggerinfo PolicyAgent starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-sc triggerinfo RasMan starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo RasMan starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnOverMeteredNetworks" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\RasMan\Parameters" /v "AllowVpnWhileRoaming" /t REG_DWORD /d 1 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\SstpSvc" /v "Start" /t REG_DWORD /d 3 /f >> "%log%" 2>&1
-sc triggerinfo SstpSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\RemoteAccess" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\SstpSvc" /v "Start" /t REG_DWORD /d 4 /f >> "%log%" 2>&1
+:: sc triggerinfo SstpSvc starttype= all 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v "DisabledComponents" /t REG_DWORD /d 0 /f >> "%log%" 2>&1
 
 echo "MOUSE STUFF POINTER SPEED DEFAULT (10 IN REGISTRY/MS-SETTINGS:MOUSETOUCHPAD) (6/11 IN SLIDER/MAIN.CPL)" >> "%log%"
@@ -1103,7 +1103,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\fhsvc" /v "Start" /t REG_DWORD /
 schtasks /change /tn "\Microsoft\Windows\FileHistory\File History (maintenance mode)" /disable 2>&1 | findstr /I "ERROR FAILED" >> "%log%"
 
 echo "MAKE MIDDLE MOUSE BUTTON OPEN IN NEW WINDOW NOT TABS (DEFAULT 0C0002000A01000060000000)" >> "%log%"
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" /v "Settings" /t REG_BINARY /d 0C0002002A01000060000000 /f >> "%log%" 2>&1
+:: reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" /v "Settings" /t REG_BINARY /d 0C0002002A01000060000000 /f >> "%log%" 2>&1
 :: reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\CabinetState" /v "Settings" /t REG_BINARY /d 0C0002000A01000060000000 /f >> "%log%" 2>&1
 
 echo "PERSONALIZATION/EXPLORER/CONTROL PANEL TWEAKS/THEMES" >> "%log%"
